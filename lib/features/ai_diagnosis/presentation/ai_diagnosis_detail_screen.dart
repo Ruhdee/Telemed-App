@@ -40,6 +40,16 @@ class _AiDiagnosisDetailScreenState extends ConsumerState<AiDiagnosisDetailScree
       orElse: () => diseaseModels.first,
     );
     AppLogger.nav('AI Diagnosis detail: ${_config.name}');
+
+    if (_config.type == DiseaseModelType.tabular) {
+      for (final input in _config.inputs) {
+        if (input.type == InputType.select && input.options?.isNotEmpty == true) {
+          _formValues[input.key] = input.options!.first.value;
+        } else if (input.type == InputType.number) {
+          _formValues[input.key] = ''; // Default empty string like React
+        }
+      }
+    }
   }
 
   Future<void> _pickImage() async {
@@ -205,12 +215,20 @@ class _AiDiagnosisDetailScreenState extends ConsumerState<AiDiagnosisDetailScree
           children: [
             Text(input.label, style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 6),
-            TextField(
+            TextFormField(
+              initialValue: _formValues[input.key]?.toString(),
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 hintText: input.placeholder ?? 'Enter ${input.label.toLowerCase()}',
               ),
-              onChanged: (v) => _formValues[input.key] = double.tryParse(v) ?? 0,
+              onChanged: (v) {
+                final val = double.tryParse(v);
+                if (val != null) {
+                  _formValues[input.key] = val;
+                } else {
+                  _formValues[input.key] = v; // Keep string to trigger backend validation if needed
+                }
+              },
             ),
           ],
         );
@@ -222,11 +240,14 @@ class _AiDiagnosisDetailScreenState extends ConsumerState<AiDiagnosisDetailScree
             Text(input.label, style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 6),
             DropdownButtonFormField<dynamic>(
+              initialValue: _formValues[input.key],
               decoration: const InputDecoration(),
               items: input.options?.map((o) {
                 return DropdownMenuItem(value: o.value, child: Text(o.label));
               }).toList(),
-              onChanged: (v) => _formValues[input.key] = v,
+              onChanged: (v) {
+                setState(() => _formValues[input.key] = v);
+              },
             ),
           ],
         );

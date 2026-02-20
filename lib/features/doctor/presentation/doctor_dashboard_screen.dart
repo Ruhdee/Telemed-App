@@ -79,7 +79,7 @@ class DoctorDashboardScreen extends ConsumerWidget {
               children: [
                 _ActionChip(icon: LucideIcons.stethoscope, label: 'AI Copilot', onTap: () {}),
                 _ActionChip(icon: LucideIcons.fileText, label: 'SOAP Notes', onTap: () {}),
-                _ActionChip(icon: LucideIcons.video, label: 'Start Call', onTap: () {}),
+                _ActionChip(icon: LucideIcons.video, label: 'Review Videos', onTap: () => context.push('/doctor/consultation-review')),
                 _ActionChip(icon: LucideIcons.pill, label: 'Prescribe', onTap: () {}),
               ],
             ).animate().fadeIn(delay: 200.ms),

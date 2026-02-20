@@ -41,9 +41,10 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
     try {
       final apiClient = ref.read(apiClientProvider);
       final response = await apiClient.get(ApiConstants.doctorsEndpoint);
-      if (response.data != null && response.data is Map<String, dynamic>) {
+      final data = response.data;
+      if (data != null) {
         setState(() {
-          _doctors = response.data['data'] as List<dynamic>? ?? [];
+          _doctors = (data is List ? data : (data['data'] as List? ?? [])).cast<dynamic>();
         });
       }
     } catch (e) {
@@ -129,7 +130,7 @@ class _FeedbackScreenState extends ConsumerState<FeedbackScreen> {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                       ),
                       hint: const Text('Choose a doctor'),
-                      value: _selectedDoctorId,
+                      initialValue: _selectedDoctorId,
                       items: _doctors.map((d) {
                         return DropdownMenuItem<String>(
                           value: d['_id']?.toString() ?? d['id']?.toString(),

@@ -129,8 +129,9 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
     List<Appointment> appointments = [];
     try {
       final apptRes = await _apiClient.get(ApiConstants.patientAppointmentsEndpoint);
-      if (apptRes.data != null && apptRes.data['data'] != null) {
-        final List list = apptRes.data['data'];
+      final data = apptRes.data;
+      if (data != null) {
+        final List list = data is List ? data : (data['data'] ?? []);
         appointments = list.map((e) => Appointment.fromJson(e as Map<String, dynamic>)).toList();
       }
     } catch (e) {
@@ -144,8 +145,9 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
     List<Appointment> appointments = [];
     try {
       final apptRes = await _apiClient.get(ApiConstants.doctorAppointmentsEndpoint);
-      if (apptRes.data != null && apptRes.data['data'] != null) {
-        final List list = apptRes.data['data'];
+      final data = apptRes.data;
+      if (data != null) {
+        final List list = data is List ? data : (data['data'] ?? []);
         appointments = list.map((e) => Appointment.fromJson(e as Map<String, dynamic>)).toList();
       }
     } catch (e) {

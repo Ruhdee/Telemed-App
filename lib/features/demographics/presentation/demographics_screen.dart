@@ -305,7 +305,7 @@ class _DemographicsScreenState extends ConsumerState<DemographicsScreen> {
 
   Widget _buildDropdown(String label, String value, List<String> options, ValueChanged<String?> onChanged) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),

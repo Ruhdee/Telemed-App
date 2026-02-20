@@ -7,10 +7,10 @@ class ApiConstants {
   ApiConstants._();
 
   /// Node.js backend base URL (port 5000 from .env)
-  static const String baseUrl = 'http://10.0.2.2:5000';
+  static const String baseUrl = 'http://10.0.2.2:5001';
 
   /// Copilot WebSocket URL
-  static const String copilotWsUrl = 'ws://10.0.2.2:5000';
+  static const String copilotWsUrl = 'ws://10.0.2.2:5001';
 
   /// TomTom Maps API key
   static const String tomtomApiKey = 'AHFi7q46N4j8cgLhMASvdEWJIACzxVCl';

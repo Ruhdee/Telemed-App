@@ -33,6 +33,7 @@ class DashboardShell extends ConsumerWidget {
             _DrawerItem(icon: LucideIcons.user, label: 'Demographics', onTap: () => _onItemTapped(1, context)),
             _DrawerItem(icon: LucideIcons.calendar, label: 'Services & Booking', onTap: () => _onItemTapped(2, context)),
             _DrawerItem(icon: LucideIcons.video, label: 'Offline Consultation', onTap: () => context.go('/dashboard/consultation')),
+            _DrawerItem(icon: LucideIcons.history, label: 'Consultation History', onTap: () => context.go('/dashboard/consultation-history')),
             _DrawerItem(icon: LucideIcons.fileText, label: 'Health Records', onTap: () => context.go('/dashboard/records')),
             _DrawerItem(icon: LucideIcons.pill, label: 'Pharmacy', onTap: () => context.go('/dashboard/pharmacy')),
             _DrawerItem(icon: LucideIcons.mapPin, label: 'Hospital Map', onTap: () => context.go('/dashboard/map')),

@@ -61,7 +61,7 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Predict heart disease risk based on cardiovascular metrics.',
     icon: LucideIcons.heart,
     type: DiseaseModelType.tabular,
-    endpoint: '/api/predict/heart',
+    endpoint: 'heart',
     inputs: [
       DiseaseInput(key: 'age', label: 'Age', type: InputType.number, min: 1, max: 120),
       DiseaseInput(key: 'sex', label: 'Sex', type: InputType.select, options: [DiseaseInputOption(label: 'Male', value: 1), DiseaseInputOption(label: 'Female', value: 0)]),
@@ -84,7 +84,7 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Assess the likelihood of diabetes based on health indicators.',
     icon: LucideIcons.syringe,
     type: DiseaseModelType.tabular,
-    endpoint: '/api/predict/diabetes',
+    endpoint: 'diabetes',
     inputs: [
       DiseaseInput(key: 'Pregnancies', label: 'Number of Pregnancies', type: InputType.number, min: 0, max: 20),
       DiseaseInput(key: 'Glucose', label: 'Glucose Level', type: InputType.number, min: 0, max: 300),
@@ -102,7 +102,7 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Screen for liver disease using blood markers.',
     icon: LucideIcons.activity,
     type: DiseaseModelType.tabular,
-    endpoint: '/api/predict/liver',
+    endpoint: 'liver',
     inputs: [
       DiseaseInput(key: 'age', label: 'Age', type: InputType.number, min: 1, max: 120),
       DiseaseInput(key: 'gender', label: 'Gender', type: InputType.select, options: [DiseaseInputOption(label: 'Male', value: 1), DiseaseInputOption(label: 'Female', value: 0)]),
@@ -122,7 +122,7 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Chronic Kidney Disease prediction.',
     icon: LucideIcons.activity,
     type: DiseaseModelType.tabular,
-    endpoint: '/api/predict/ckd',
+    endpoint: 'ckd',
     inputs: [
       DiseaseInput(key: 'age', label: 'Age', type: InputType.number),
       DiseaseInput(key: 'bp', label: 'Blood Pressure', type: InputType.number),
@@ -158,7 +158,7 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Upload a Chest X-ray to detect pneumonia.',
     icon: LucideIcons.image,
     type: DiseaseModelType.image,
-    endpoint: '/api/predict/pneumonia',
+    endpoint: 'pneumonia',
   ),
   DiseaseConfig(
     id: 'tuberculosis',
@@ -166,7 +166,7 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Upload a Chest X-ray to screen for TB.',
     icon: LucideIcons.image,
     type: DiseaseModelType.image,
-    endpoint: '/api/predict/tb',
+    endpoint: 'tb',
   ),
   DiseaseConfig(
     id: 'brain-tumor',
@@ -174,7 +174,7 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Upload an MRI scan to detect brain tumors.',
     icon: LucideIcons.brain,
     type: DiseaseModelType.image,
-    endpoint: '/api/predict/brain-tumor',
+    endpoint: 'brain-tumor',
   ),
   DiseaseConfig(
     id: 'retinopathy',
@@ -182,7 +182,7 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Upload a retinal scan image.',
     icon: LucideIcons.eye,
     type: DiseaseModelType.image,
-    endpoint: '/api/predict/retinopathy',
+    endpoint: 'retinopathy',
   ),
   DiseaseConfig(
     id: 'skin-disease',
@@ -190,6 +190,6 @@ const List<DiseaseConfig> diseaseModels = [
     description: 'Upload an image of the skin condition.',
     icon: LucideIcons.thermometer,
     type: DiseaseModelType.image,
-    endpoint: '/api/predict/skin',
+    endpoint: 'skin',
   ),
 ];

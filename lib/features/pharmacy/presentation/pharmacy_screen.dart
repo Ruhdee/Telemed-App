@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_logger.dart';
-
-
-
-import '../../../shared/widgets/glass_panel.dart';
+import '../../../core/constants/api_constants.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../../shared/widgets/glass_panel.dart';
+import '../../../shared/widgets/app_button.dart';
+import '../providers/pharmacy_provider.dart';
 
-
-/// Pharmacy screen matching `pharmacy/page.tsx`.
-///
-/// Displays nearby pharmacies, order status, and delivery requests.
 class PharmacyScreen extends ConsumerStatefulWidget {
   const PharmacyScreen({super.key});
 
@@ -22,78 +20,98 @@ class PharmacyScreen extends ConsumerStatefulWidget {
 }
 
 class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
-  final List<Map<String, dynamic>> _pharmacies = [];
+  final List<Map<String, dynamic>> _medicines = [];
   bool _isLoading = true;
   int _selectedTab = 0;
 
   @override
   void initState() {
     super.initState();
-    _loadPharmacies();
+    _loadMedicines();
   }
 
-  Future<void> _loadPharmacies() async {
-    AppLogger.info('PHARMACY', 'Loading pharmacies');
+  Future<void> _loadMedicines() async {
     try {
       final apiClient = ref.read(apiClientProvider);
-      final response = await apiClient.get('/pharmacies');
+      final response = await apiClient.get(ApiConstants.pharmaInventoryEndpoint);
       final data = response.data;
       if (data is List) {
         setState(() {
-          _pharmacies.addAll(data.cast<Map<String, dynamic>>());
-          _isLoading = false;
+          _medicines.addAll(data.cast<Map<String, dynamic>>());
         });
-      } else {
-        setState(() => _isLoading = false);
       }
     } catch (e) {
-      AppLogger.error('PHARMACY', 'Failed to load pharmacies', e);
-      setState(() => _isLoading = false);
-      // Show dummy data for UI
+      AppLogger.error('PHARMACY', 'Failed to load medicines', e);
+      // Fallback data
       setState(() {
-        _pharmacies.addAll([
-          {'name': 'MedPlus Pharmacy', 'address': '123 Health St', 'distance': '0.5 km', 'rating': 4.5, 'availability': 'Open'},
-          {'name': 'Apollo Pharmacy', 'address': '456 Care Ave', 'distance': '1.2 km', 'rating': 4.8, 'availability': 'Open'},
-          {'name': 'LifeCare Pharmacy', 'address': '789 Wellness Rd', 'distance': '2.0 km', 'rating': 4.2, 'availability': 'Closed'},
+        _medicines.addAll([
+          {'id': 1, 'name': 'Paracetamol 500mg', 'description': 'Pain reliever and fever reducer.', 'price': 5.99, 'stock': 100, 'requiresPrescription': false},
+          {'id': 2, 'name': 'Amoxicillin 250mg', 'description': 'Antibiotic used to treat bacterial infections.', 'price': 12.50, 'stock': 50, 'requiresPrescription': true},
+          {'id': 3, 'name': 'Vitamin C Supplement', 'description': 'Immune system support.', 'price': 8.99, 'stock': 200, 'requiresPrescription': false},
         ]);
       });
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final cart = ref.watch(cartProvider);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Pharmacy')),
+      appBar: AppBar(
+        title: const Text('Pharmacy Store'),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(LucideIcons.shoppingCart),
+                onPressed: () => context.push('/dashboard/pharmacy-cart'),
+              ),
+              if (cart.isNotEmpty)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
+                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    child: Text(
+                      '${cart.length}',
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: Column(
         children: [
-          // Tab bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                _TabButton(label: 'Nearby', selected: _selectedTab == 0, onTap: () => setState(() => _selectedTab = 0)),
+                _TabButton(label: 'Medicines', selected: _selectedTab == 0, onTap: () => setState(() => _selectedTab = 0)),
                 const SizedBox(width: 8),
                 _TabButton(label: 'Orders', selected: _selectedTab == 1, onTap: () => setState(() => _selectedTab = 1)),
-                const SizedBox(width: 8),
-                _TabButton(label: 'Delivery', selected: _selectedTab == 2, onTap: () => setState(() => _selectedTab = 2)),
               ],
             ),
           ),
 
           Expanded(
             child: _selectedTab == 0
-                ? _NearbyTab(pharmacies: _pharmacies, isLoading: _isLoading)
-                : _selectedTab == 1
-                    ? const _OrdersTab()
-                    : const _DeliveryTab(),
+                ? _MedicinesTab(medicines: _medicines, isLoading: _isLoading)
+                : const _OrdersTab(),
           ),
         ],
       ),
     );
   }
 }
-
-// ── Tab Button ─────────────────────────────────────────────────
 
 class _TabButton extends StatelessWidget {
   final String label;
@@ -129,79 +147,81 @@ class _TabButton extends StatelessWidget {
   }
 }
 
-// ── Nearby Tab ─────────────────────────────────────────────────
-
-class _NearbyTab extends StatelessWidget {
-  final List<Map<String, dynamic>> pharmacies;
+class _MedicinesTab extends ConsumerWidget {
+  final List<Map<String, dynamic>> medicines;
   final bool isLoading;
 
-  const _NearbyTab({required this.pharmacies, required this.isLoading});
+  const _MedicinesTab({required this.medicines, required this.isLoading});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (isLoading) return const Center(child: CircularProgressIndicator(color: AppColors.goldPrimary));
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
-      itemCount: pharmacies.length,
+      itemCount: medicines.length,
       itemBuilder: (context, index) {
-        final p = pharmacies[index];
-        final isOpen = p['availability'] == 'Open';
+        final med = medicines[index];
+        final price = (med['price'] as num?)?.toDouble() ?? 0.0;
+        final stock = med['stock'] ?? 0;
+        final isRx = med['requiresPrescription'] == true;
+
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: GlassPanel(
             child: Row(
               children: [
                 Container(
-                  width: 52,
-                  height: 52,
+                  width: 60,
+                  height: 60,
                   decoration: BoxDecoration(
-                    color: isOpen ? AppColors.success.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
+                    color: AppColors.goldLight.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: Icon(LucideIcons.pill, color: isOpen ? AppColors.success : AppColors.error, size: 24),
+                  child: const Icon(LucideIcons.pill, color: AppColors.goldDark, size: 28),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(p['name']?.toString() ?? '', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                      Text(med['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                      if (isRx)
+                         Container(
+                           margin: const EdgeInsets.only(top: 4, bottom: 4),
+                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                           decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
+                           child: const Text('Rx Required', style: TextStyle(fontSize: 10, color: AppColors.warning, fontWeight: FontWeight.bold)),
+                         ),
                       const SizedBox(height: 4),
-                      Text(p['address']?.toString() ?? '', style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                      Text(med['description'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                      const SizedBox(height: 8),
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Icon(Icons.star, size: 12, color: AppColors.goldPrimary),
-                          const SizedBox(width: 4),
-                          Text('${p['rating'] ?? "N/A"}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-                          const SizedBox(width: 12),
-                          Text(p['distance']?.toString() ?? '', style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                          Text('\$${price.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.goldDark)),
+                          AppButton(
+                            label: 'Add',
+                            icon: const Icon(LucideIcons.plus, size: 16, color: Colors.white),
+                            variant: AppButtonVariant.primary,
+                            onPressed: stock > 0 ? () {
+                              ref.read(cartProvider.notifier).addItem(med);
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to cart'), duration: Duration(seconds: 1)));
+                            } : null,
+                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: isOpen ? AppColors.success.withValues(alpha: 0.1) : AppColors.error.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    isOpen ? 'Open' : 'Closed',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: isOpen ? AppColors.success : AppColors.error),
-                  ),
-                ),
               ],
             ),
-          ).animate().fadeIn(delay: (index * 60).ms),
+          ).animate().fadeIn(delay: (index * 50).ms),
         );
       },
     );
   }
 }
-
-// ── Orders Tab ─────────────────────────────────────────────────
 
 class _OrdersTab extends StatelessWidget {
   const _OrdersTab();
@@ -217,28 +237,6 @@ class _OrdersTab extends StatelessWidget {
           const Text('No orders yet', style: TextStyle(fontSize: 16, color: AppColors.textMuted)),
           const SizedBox(height: 8),
           const Text('Your medication orders will appear here', style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
-        ],
-      ),
-    ).animate().fadeIn();
-  }
-}
-
-// ── Delivery Tab ───────────────────────────────────────────────
-
-class _DeliveryTab extends StatelessWidget {
-  const _DeliveryTab();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(LucideIcons.truck, size: 48, color: AppColors.textMuted),
-          const SizedBox(height: 16),
-          const Text('No active deliveries', style: TextStyle(fontSize: 16, color: AppColors.textMuted)),
-          const SizedBox(height: 8),
-          const Text('Track your medicine deliveries here', style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
         ],
       ),
     ).animate().fadeIn();

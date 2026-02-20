@@ -53,9 +53,10 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
     try {
       final apiClient = ref.read(apiClientProvider);
       final response = await apiClient.get(ApiConstants.specializationsEndpoint);
-      if (response.data != null && response.data is Map<String, dynamic>) {
+      final data = response.data;
+      if (data != null) {
         setState(() {
-          _specializations = response.data['data'] as List<dynamic>? ?? [];
+          _specializations = (data is List ? data : (data['data'] as List? ?? [])).cast<dynamic>();
         });
       }
     } catch (e) {
@@ -69,10 +70,12 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
     setState(() => _isLoadingDoctors = true);
     try {
       final apiClient = ref.read(apiClientProvider);
-      final response = await apiClient.get('${ApiConstants.specializationsEndpoint}/$specName');
-      if (response.data != null && response.data is Map<String, dynamic>) {
+      // Backend defines '/api/specializations' for all, but '/api/specialization/:id' for specific ones
+      final response = await apiClient.get('/api/specialization/$specName');
+      final data = response.data;
+      if (data != null) {
         setState(() {
-          _doctors = response.data['data'] as List<dynamic>? ?? [];
+          _doctors = (data is List ? data : (data['data'] as List? ?? [])).cast<dynamic>();
         });
       }
     } catch (e) {
@@ -354,7 +357,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                 lastDate: DateTime.now().add(const Duration(days: 90)),
               );
               if (date != null) {
-                if (!context.mounted) return;
+                if (!mounted) return;
                 final time = await showTimePicker(
                   context: context,
                   initialTime: TimeOfDay.fromDateTime(_selectedDate),
@@ -386,7 +389,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
           const Text('Consultation Type', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _appointmentType,
+            initialValue: _appointmentType,
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

@@ -13,10 +13,13 @@ import '../../features/ai_diagnosis/presentation/ai_diagnosis_list_screen.dart';
 import '../../features/ai_diagnosis/presentation/ai_diagnosis_detail_screen.dart';
 import '../../features/records/presentation/records_screen.dart';
 import '../../features/pharmacy/presentation/pharmacy_screen.dart';
+import '../../features/pharmacy/presentation/pharmacy_cart_screen.dart';
 import '../../features/map/presentation/hospital_map_screen.dart';
 import '../../features/doctor/presentation/doctor_dashboard_screen.dart';
 import '../../features/nurse/presentation/nurse_dashboard_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_screen.dart';
+import '../../features/offline_consultation/presentation/offline_consultation_list_screen.dart';
+import '../../features/offline_consultation/presentation/offline_consultation_review_screen.dart';
 import '../../features/demographics/presentation/demographics_screen.dart';
 import '../../features/feedback/presentation/feedback_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
@@ -134,6 +137,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const PharmacyScreen(),
           ),
           GoRoute(
+            path: '/dashboard/pharmacy-cart',
+            name: 'pharmacy-cart',
+            builder: (context, state) => const PharmacyCartScreen(),
+          ),
+          GoRoute(
             path: '/dashboard/map',
             name: 'hospital-map',
             builder: (context, state) => const HospitalMapScreen(),
@@ -142,6 +150,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/dashboard/consultation',
             name: 'consultation',
             builder: (context, state) => const OfflineConsultationScreen(),
+          ),
+          GoRoute(
+            path: '/dashboard/consultation-history',
+            name: 'consultation-history',
+            builder: (context, state) => const OfflineConsultationListScreen(),
           ),
           GoRoute(
             path: '/dashboard/demographics',
@@ -166,6 +179,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/doctor',
         name: 'doctor-dashboard',
         builder: (context, state) => const DoctorDashboardScreen(),
+      ),
+      GoRoute(
+        path: '/doctor/consultation-review',
+        name: 'doctor-consultation-review',
+        builder: (context, state) => const OfflineConsultationReviewScreen(),
       ),
 
       // Nurse Dashboard

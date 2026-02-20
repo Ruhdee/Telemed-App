@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:dio/dio.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_logger.dart';
@@ -41,7 +40,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
 
     try {
       final apiClient = ref.read(apiClientProvider);
-      final response = await apiClient.get('/prescriptions');
+      final response = await apiClient.get(ApiConstants.prescriptionsEndpoint);
       final data = response.data;
       if (data is List) {
         setState(() {
@@ -71,14 +70,13 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
     AppLogger.info('RECORDS', 'Uploading image for OCR: ${picked.path}');
 
     try {
-      final dio = Dio();
-      final formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(picked.path, filename: 'prescription.jpg'),
-      });
-
-      final response = await dio.post(
-        '${ApiConstants.baseUrl}${ApiConstants.scanPrescriptionEndpoint}',
-        data: formData,
+      final apiClient = ref.read(apiClientProvider);
+      
+      final response = await apiClient.uploadFile(
+        ApiConstants.scanPrescriptionEndpoint,
+        fieldName: 'prescription',
+        filePath: picked.path,
+        fileName: 'prescription.jpg',
       );
 
       final data = response.data as Map<String, dynamic>;
