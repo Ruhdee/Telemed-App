@@ -6,46 +6,55 @@
 class ApiConstants {
   ApiConstants._();
 
-  /// Node.js backend base URL
-  static const String baseUrl = 'http://10.0.2.2:5001';
-
-  /// Python AI services base URL (ai-triage / diabetes)
-  static const String aiBaseUrl = 'http://10.0.2.2:8000';
+  /// Node.js backend base URL (port 5000 from .env)
+  static const String baseUrl = 'http://10.0.2.2:5000';
 
   /// Copilot WebSocket URL
-  static const String copilotWsUrl = 'ws://10.0.2.2:8100';
+  static const String copilotWsUrl = 'ws://10.0.2.2:5000';
 
-  /// TomTom Maps API key (from React frontend)
+  /// TomTom Maps API key
   static const String tomtomApiKey = 'AHFi7q46N4j8cgLhMASvdEWJIACzxVCl';
 
-  /// Gemini API key (from React frontend)
-  static const String geminiApiKey = 'AIzaSyARkBi6grFCBI0Taq7-NUvOFFRGXuMIxkY';
+  /// Gemini API key (synced with backend .env)
+  static const String geminiApiKey = 'AIzaSyAG7GggH036raqLZlXPno-W0dfzIK91QHg';
 
-  // ── API Endpoints ────────────────────────────────────────────
+  // ── Auth Endpoints ───────────────────────────────────────────
+  static const String loginEndpoint = '/api/login';
+  static const String registerEndpoint = '/api/register';
 
-  // Auth
-  static const String loginEndpoint = '/api/auth/login';
-  static const String registerEndpoint = '/api/auth/register';
-  static const String meEndpoint = '/api/auth/me';
+  // ── Doctor / Specialization (public) ─────────────────────────
+  static const String doctorsEndpoint = '/api/doctors';
+  static const String specializationsEndpoint = '/api/specializations';
 
-  // Appointments
+  // ── Appointments ─────────────────────────────────────────────
   static const String appointmentsEndpoint = '/api/appointments';
   static const String doctorAppointmentsEndpoint = '/api/appointments/doctor';
+  static const String patientAppointmentsEndpoint = '/api/appointments/patient';
 
-  // Records / OCR
+  // ── Records / OCR ────────────────────────────────────────────
   static const String scanPrescriptionEndpoint = '/api/scan-prescription';
   static const String scanBloodReportEndpoint = '/api/scan-blood-report';
+  static const String prescriptionsEndpoint = '/api/prescriptions';
+  static const String reportsEndpoint = '/api/reports';
 
-  // Chatbot
+  // ── Chatbot ──────────────────────────────────────────────────
   static const String chatbotEndpoint = '/api/chatbot/chat';
 
-  // Triage
-  static const String triageEndpoint = '/api/triage';
+  // ── AI Prediction ────────────────────────────────────────────
+  static const String predictEndpoint = '/api/predict';
 
-  // SOAP
-  static const String soapEndpoint = '/api/soap';
+  // ── Pharmacy ─────────────────────────────────────────────────
+  static const String pharmaInventoryEndpoint = '/api/pharma/inventory';
+  static const String pharmaCheckoutEndpoint = '/api/pharma/checkout';
+  static const String pharmaOrdersEndpoint = '/api/pharma/orders';
 
-  // TomTom
+  // ── Demographics ─────────────────────────────────────────────
+  static const String demographicsEndpoint = '/api/demographics';
+
+  // ── Feedback ─────────────────────────────────────────────────
+  static const String feedbackEndpoint = '/api/feedback';
+
+  // ── TomTom ───────────────────────────────────────────────────
   static String tomtomSearchUrl(double lat, double lon) =>
       'https://api.tomtom.com/search/2/nearbySearch/.json'
       '?key=$tomtomApiKey&lat=$lat&lon=$lon&radius=5000'

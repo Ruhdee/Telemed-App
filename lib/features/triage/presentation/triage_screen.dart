@@ -46,23 +46,36 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
     AppLogger.ai('Submitting triage: ${_chiefComplaintController.text}');
 
     try {
+      // Build a structured triage prompt for the chatbot/Gemini endpoint
+      final triagePrompt = 'Act as a medical triage assistant. '
+          'Assess the following patient symptoms and provide a risk level '
+          '(low, moderate, high, emergency), recommended action, and brief explanation.\n\n'
+          'Chief complaint: ${_chiefComplaintController.text}\n'
+          'Additional symptoms: ${_symptomsController.text}\n'
+          'Severity: $_severity\n'
+          'Duration: $_duration';
+
       final apiClient = ref.read(apiClientProvider);
       final response = await apiClient.post(
-        ApiConstants.triageEndpoint,
+        ApiConstants.chatbotEndpoint,
         data: {
-          'chiefComplaint': _chiefComplaintController.text,
-          'symptomsDescription': _symptomsController.text,
-          'severity': _severity,
-          'duration': _duration,
+          'message': triagePrompt,
+          'language': 'en',
         },
       );
 
       final data = response.data as Map<String, dynamic>;
+      final reply = data['reply'] as String? ?? 'No assessment available.';
+
       setState(() {
-        _result = data;
+        _result = {
+          'assessment': reply,
+          'chiefComplaint': _chiefComplaintController.text,
+          'severity': _severity,
+        };
         _isLoading = false;
       });
-      AppLogger.ai('Triage result received', data);
+      AppLogger.ai('Triage result received', _result);
     } catch (e) {
       AppLogger.error('AI', 'Triage submission failed', e);
       setState(() => _isLoading = false);
@@ -213,64 +226,73 @@ class _TriageResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final riskLevel = result['riskLevel'] as String? ?? 'unknown';
-    final score = result['score'] as int? ?? 0;
-    final recommendation = result['recommendation'] as String? ?? '';
-    final analysis = result['analysis'] as String? ?? '';
+    final assessment = result['assessment'] as String? ?? 'No assessment available.';
+    final severity = result['severity'] as String? ?? 'moderate';
 
     return GlassPanel(
-      borderColor: _riskColor(riskLevel).withValues(alpha: 0.5),
+      borderColor: _severityColor(severity).withValues(alpha: 0.5),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Risk badge
+          // Header badge
           Row(
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _riskColor(riskLevel).withValues(alpha: 0.15),
+                  color: _severityColor(severity).withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: _riskColor(riskLevel).withValues(alpha: 0.3)),
+                  border: Border.all(color: _severityColor(severity).withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(LucideIcons.alertTriangle, size: 14, color: _riskColor(riskLevel)),
+                    Icon(LucideIcons.stethoscope, size: 14, color: _severityColor(severity)),
                     const SizedBox(width: 6),
                     Text(
-                      '${riskLevel.toUpperCase()} RISK',
-                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: _riskColor(riskLevel)),
+                      'AI TRIAGE ASSESSMENT',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: _severityColor(severity)),
                     ),
                   ],
                 ),
               ),
-              const Spacer(),
-              Text('Score: $score', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
             ],
           ),
           const SizedBox(height: 16),
-          if (analysis.isNotEmpty) ...[
-            const Text('AI Analysis', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-            const SizedBox(height: 6),
-            Text(analysis, style: const TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary)),
-            const SizedBox(height: 12),
-          ],
-          if (recommendation.isNotEmpty) ...[
-            const Text('Recommendation', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-            const SizedBox(height: 6),
-            Text(recommendation, style: const TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary)),
-          ],
+          const Text('Assessment', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+          const SizedBox(height: 6),
+          Text(assessment, style: const TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary)),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.warning.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: [
+                Icon(LucideIcons.alertTriangle, size: 14, color: AppColors.warning),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text(
+                    'AI assessment only. Consult a medical professional for diagnosis.',
+                    style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Color _riskColor(String level) {
+  Color _severityColor(String level) {
     switch (level) {
-      case 'high': return AppColors.riskHigh;
-      case 'medium': return AppColors.riskMedium;
+      case 'severe': return AppColors.riskHigh;
+      case 'moderate': return AppColors.riskMedium;
       default: return AppColors.riskLow;
     }
   }
 }
+

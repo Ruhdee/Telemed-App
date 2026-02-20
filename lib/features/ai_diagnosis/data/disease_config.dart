@@ -36,12 +36,17 @@ class DiseaseConfig {
   final IconData icon;
   final List<DiseaseInput> inputs;
 
+  /// Backend route slug under `/api/predict/`.
+  /// e.g. `heart` → POST `/api/predict/heart`
+  final String endpoint;
+
   const DiseaseConfig({
     required this.id,
     required this.name,
     required this.description,
     required this.icon,
     required this.inputs,
+    required this.endpoint,
   });
 }
 
@@ -49,6 +54,7 @@ class DiseaseConfig {
 final List<DiseaseConfig> diseaseModels = [
   DiseaseConfig(
     id: 'heart-disease',
+    endpoint: 'heart',
     name: 'Heart Disease',
     description: 'Predict cardiovascular risk factors using patient metrics.',
     icon: LucideIcons.heart,
@@ -63,6 +69,7 @@ final List<DiseaseConfig> diseaseModels = [
   ),
   DiseaseConfig(
     id: 'diabetes',
+    endpoint: 'diabetes',
     name: 'Diabetes',
     description: 'Assess diabetes risk using health indicators.',
     icon: LucideIcons.syringe,
@@ -76,6 +83,7 @@ final List<DiseaseConfig> diseaseModels = [
   ),
   DiseaseConfig(
     id: 'parkinsons',
+    endpoint: 'parkinsons',
     name: "Parkinson's Disease",
     description: 'Detect early signs of Parkinson\'s from voice metrics.',
     icon: LucideIcons.brain,
@@ -87,6 +95,7 @@ final List<DiseaseConfig> diseaseModels = [
   ),
   DiseaseConfig(
     id: 'breast-cancer',
+    endpoint: 'breast-cancer',
     name: 'Breast Cancer',
     description: 'Evaluate breast cancer indicators from cell measurements.',
     icon: LucideIcons.fileText,
@@ -98,6 +107,7 @@ final List<DiseaseConfig> diseaseModels = [
   ),
   DiseaseConfig(
     id: 'liver-disease',
+    endpoint: 'liver',
     name: 'Liver Disease',
     description: 'Assess liver health based on blood test results.',
     icon: LucideIcons.activity,
@@ -109,6 +119,7 @@ final List<DiseaseConfig> diseaseModels = [
   ),
   DiseaseConfig(
     id: 'kidney-disease',
+    endpoint: 'ckd',
     name: 'Kidney Disease',
     description: 'Evaluate kidney function from clinical parameters.',
     icon: LucideIcons.thermometer,
@@ -121,6 +132,7 @@ final List<DiseaseConfig> diseaseModels = [
   ),
   DiseaseConfig(
     id: 'hepatitis',
+    endpoint: 'hepatitis',
     name: 'Hepatitis',
     description: 'Screen for hepatitis using clinical symptoms and tests.',
     icon: LucideIcons.eye,
@@ -133,6 +145,7 @@ final List<DiseaseConfig> diseaseModels = [
   ),
   DiseaseConfig(
     id: 'pneumonia',
+    endpoint: 'pneumonia',
     name: 'Pneumonia Detection',
     description: 'Detect pneumonia from chest X-ray images using AI.',
     icon: LucideIcons.image,

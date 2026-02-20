@@ -1,3 +1,4 @@
+import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../../core/network/api_client.dart';
@@ -8,6 +9,11 @@ import '../domain/user_model.dart';
 /// Repository handling all auth-related API calls and token storage.
 ///
 /// Mirrors the React `AuthContext.tsx` login/register/logout flow.
+///
+/// The backend returns a **flat** JSON response:
+/// ```json
+/// { "id": 1, "name": "...", "email": "...", "role": "patient", "token": "..." }
+/// ```
 class AuthRepository {
   final ApiClient _apiClient;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
@@ -28,15 +34,15 @@ class AuthRepository {
       },
     );
 
+    // Backend returns flat JSON: { id, name, email, role, token, password, ... }
     final data = response.data as Map<String, dynamic>;
     final token = data['token'] as String;
-    final userJson = data['user'] as Map<String, dynamic>;
 
     // Save token securely
     await _storage.write(key: 'auth_token', value: token);
     AppLogger.auth('Login successful, token stored');
 
-    return User.fromJson(userJson);
+    return User.fromJson(data);
   }
 
   /// Register a new user.
@@ -58,17 +64,20 @@ class AuthRepository {
       },
     );
 
+    // Backend returns flat JSON: { id, name, email, role, token, ... }
     final data = response.data as Map<String, dynamic>;
     final token = data['token'] as String;
-    final userJson = data['user'] as Map<String, dynamic>;
 
     await _storage.write(key: 'auth_token', value: token);
     AppLogger.auth('Registration successful, token stored');
 
-    return User.fromJson(userJson);
+    return User.fromJson(data);
   }
 
   /// Fetch the current user from stored token.
+  ///
+  /// Since the backend has no `/api/auth/me` endpoint, we decode
+  /// the JWT locally to extract user info (id, email, role).
   Future<User?> getCurrentUser() async {
     final token = await _storage.read(key: 'auth_token');
     if (token == null) {
@@ -77,16 +86,56 @@ class AuthRepository {
     }
 
     try {
-      final response = await _apiClient.get(ApiConstants.meEndpoint);
-      final data = response.data as Map<String, dynamic>;
-      final user = User.fromJson(data['user'] ?? data);
-      AppLogger.auth('Restored session for ${user.name}');
+      // Decode JWT payload (middle segment, base64url)
+      final parts = token.split('.');
+      if (parts.length != 3) {
+        AppLogger.error('AUTH', 'Invalid JWT format');
+        await _storage.delete(key: 'auth_token');
+        return null;
+      }
+
+      final payload = _decodeJwtPayload(parts[1]);
+      
+      // Check expiration
+      final exp = payload['exp'] as int?;
+      if (exp != null) {
+        final expiry = DateTime.fromMillisecondsSinceEpoch(exp * 1000);
+        if (DateTime.now().isAfter(expiry)) {
+          AppLogger.auth('Token expired, clearing session');
+          await _storage.delete(key: 'auth_token');
+          return null;
+        }
+      }
+
+      // JWT payload has: { id, email, role, iat, exp }
+      final user = User.fromJwt(payload);
+      AppLogger.auth('Restored session for ${user.name} (from JWT)');
       return user;
     } catch (e) {
-      AppLogger.error('AUTH', 'Failed to restore session', e);
+      AppLogger.error('AUTH', 'Failed to restore session from JWT', e);
       await _storage.delete(key: 'auth_token');
       return null;
     }
+  }
+
+  /// Decode a base64-url-encoded JWT payload segment.
+  Map<String, dynamic> _decodeJwtPayload(String encoded) {
+    // Add padding if needed
+    String normalized = encoded.replaceAll('-', '+').replaceAll('_', '/');
+    switch (normalized.length % 4) {
+      case 0:
+        break;
+      case 2:
+        normalized += '==';
+        break;
+      case 3:
+        normalized += '=';
+        break;
+      default:
+        throw FormatException('Invalid base64 string');
+    }
+    final decoded = utf8.decode(base64.decode(normalized));
+    return json.decode(decoded) as Map<String, dynamic>;
   }
 
   /// Clear stored credentials.

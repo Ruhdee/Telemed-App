@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,21 +10,22 @@ import '../../../core/utils/app_logger.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/glass_panel.dart';
+import '../../auth/providers/auth_provider.dart';
 import '../data/disease_config.dart';
 
 /// AI Diagnosis detail/form screen matching `ai-diagnosis/[id]/page.tsx`.
 ///
 /// Dynamic form generated from [DiseaseConfig.inputs] for the selected model.
-class AiDiagnosisDetailScreen extends StatefulWidget {
+class AiDiagnosisDetailScreen extends ConsumerStatefulWidget {
   final String modelId;
 
   const AiDiagnosisDetailScreen({super.key, required this.modelId});
 
   @override
-  State<AiDiagnosisDetailScreen> createState() => _AiDiagnosisDetailScreenState();
+  ConsumerState<AiDiagnosisDetailScreen> createState() => _AiDiagnosisDetailScreenState();
 }
 
-class _AiDiagnosisDetailScreenState extends State<AiDiagnosisDetailScreen> {
+class _AiDiagnosisDetailScreenState extends ConsumerState<AiDiagnosisDetailScreen> {
   late final DiseaseConfig _config;
   final Map<String, dynamic> _formValues = {};
   File? _selectedImage;
@@ -58,8 +60,8 @@ class _AiDiagnosisDetailScreenState extends State<AiDiagnosisDetailScreen> {
     AppLogger.ai('Submitting ${_config.id} prediction', _formValues);
 
     try {
-      final dio = Dio();
-      final endpoint = '${ApiConstants.aiBaseUrl}/predict/${_config.id}';
+      final apiClient = ref.read(apiClientProvider);
+      final endpoint = '${ApiConstants.predictEndpoint}/${_config.endpoint}';
 
       Response response;
       if (_selectedImage != null) {
@@ -67,9 +69,9 @@ class _AiDiagnosisDetailScreenState extends State<AiDiagnosisDetailScreen> {
           'image': await MultipartFile.fromFile(_selectedImage!.path),
           ..._formValues,
         });
-        response = await dio.post(endpoint, data: formData);
+        response = await apiClient.dio.post(endpoint, data: formData);
       } else {
-        response = await dio.post(endpoint, data: _formValues);
+        response = await apiClient.post(endpoint, data: _formValues);
       }
 
       setState(() {
