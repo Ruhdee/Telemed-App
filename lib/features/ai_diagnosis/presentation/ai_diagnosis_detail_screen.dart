@@ -129,13 +129,52 @@ class _AiDiagnosisDetailScreenState extends ConsumerState<AiDiagnosisDetailScree
             const SizedBox(height: 24),
 
             // Dynamic form
-            ...List.generate(_config.inputs.length, (i) {
-              final input = _config.inputs[i];
-              return Padding(
+            if (_config.type == DiseaseModelType.tabular) ...[
+              ...List.generate(_config.inputs.length, (i) {
+                final input = _config.inputs[i];
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _buildInput(input),
+                ).animate().fadeIn(delay: (i * 60).ms);
+              }),
+            ] else ...[
+              Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: _buildInput(input),
-              ).animate().fadeIn(delay: (i * 60).ms);
-            }),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Upload Image', style: Theme.of(context).textTheme.labelLarge),
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: _pickImage,
+                      child: Container(
+                        height: 160,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+                        ),
+                        child: _selectedImage != null
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.file(_selectedImage!, fit: BoxFit.cover, width: double.infinity),
+                              )
+                            : Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(LucideIcons.upload, size: 32, color: AppColors.textMuted),
+                                    const SizedBox(height: 8),
+                                    const Text('Tap to upload image', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
+                                  ],
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ).animate().fadeIn(),
+            ],
 
             const SizedBox(height: 8),
 
@@ -206,39 +245,7 @@ class _AiDiagnosisDetailScreenState extends ConsumerState<AiDiagnosisDetailScree
         );
 
       case InputType.image:
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(input.label, style: Theme.of(context).textTheme.labelLarge),
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: _pickImage,
-              child: Container(
-                height: 160,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
-                ),
-                child: _selectedImage != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(_selectedImage!, fit: BoxFit.cover, width: double.infinity),
-                      )
-                    : Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(LucideIcons.upload, size: 32, color: AppColors.textMuted),
-                            const SizedBox(height: 8),
-                            Text('Tap to upload image', style: TextStyle(color: AppColors.textMuted, fontSize: 13)),
-                          ],
-                        ),
-                      ),
-              ),
-            ),
-          ],
-        );
+        return const SizedBox.shrink();
     }
   }
 }

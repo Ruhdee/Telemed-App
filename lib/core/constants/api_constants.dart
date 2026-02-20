@@ -40,6 +40,9 @@ class ApiConstants {
   // ── Chatbot ──────────────────────────────────────────────────
   static const String chatbotEndpoint = '/api/chatbot/chat';
 
+  // ── Offline Consultation ─────────────────────────────────────
+  static const String offlineConsultationEndpoint = '/api/offline-consultation';
+
   // ── AI Prediction ────────────────────────────────────────────
   static const String predictEndpoint = '/api/predict';
 

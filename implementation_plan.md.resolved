@@ -1,0 +1,139 @@
+# Comprehensive Audit: Fix All Features to Match Web Frontend
+
+## Audit Summary
+
+| Feature | Web Frontend | Flutter App | Status |
+|---|---|---|---|
+| AI Disease Config | 9 models (4 tabular + 5 image), correct fields | 8 wrong models, incomplete fields, 3 fake models | ❌ Broken |
+| Offline Consultation | Camera record/photo, IndexedDB, sync | Not implemented | ❌ Missing |
+| Demographics | Health profile form + BMI calc | Not implemented | ❌ Missing |
+| Feedback | Doctor star rating + comment | Not implemented | ❌ Missing |
+| Services | Browse specializations → doctors → book appointment | Not implemented | ❌ Missing |
+| Dashboard | Fetches real appointments via API | Mock data only | ⚠️ Partial |
+| Doctor Dashboard | Fetches real appointments + patient demographics | Mock data only | ⚠️ Partial |
+| Pharmacy | Cart + checkout + payment | Loads inventory, mock orders/delivery tabs | ⚠️ Partial |
+| Records/OCR | Upload prescription + blood report OCR | Upload + OCR implemented | ✅ OK |
+| Triage | Client-side (via chatbot) | Already reworked via chatbot | ✅ OK |
+| Chatbot | POST `/api/chatbot/chat` | Already wired | ✅ OK |
+| Auth | Login/Register | Already fixed (flat JSON + JWT) | ✅ OK |
+| Map | Hospital finder | Implemented | ✅ OK |
+
+---
+
+## Phase 1: Fix AI Disease Config
+
+#### [MODIFY] [disease_config.dart](file:///d:/StudioProjects/telemed_app/lib/features/ai_diagnosis/data/disease_config.dart)
+
+- **Rewrite** the `diseaseModels` list to match web's [diseaseConfig.ts](file:///d:/Important/Hackathons/PICT%20Tech%20Fiesta/Telemed-Web/frontend/src/data/diseaseConfig.ts) exactly
+- Add `type` field (`tabular` / `image`) to [DiseaseConfig](file:///d:/Important/Hackathons/PICT%20Tech%20Fiesta/Telemed-Web/frontend/src/data/diseaseConfig.ts#16-25) class
+- **Remove**: Parkinson's, Breast Cancer, Hepatitis (no backend)
+- **Add**: TB, Brain Tumor, Retinopathy, Skin Disease (image models)
+- **Fix fields**: Heart (6→13), Diabetes (5→8), Liver (3→10), Kidney (4→24)
+
+#### [MODIFY] [ai_diagnosis_detail_screen.dart](file:///d:/StudioProjects/telemed_app/lib/features/ai_diagnosis/presentation/ai_diagnosis_detail_screen.dart)
+
+- For `image` type models: show only image picker, hide form fields
+- Upload image as `image` multipart field (matching backend `upload.single("image")`)
+
+---
+
+## Phase 2: Add Offline Video Consultation
+
+Backend: POST `/api/offline-consultation/submit` — multipart (`chiefComplaint`, `symptomsDescription`, `video`, `photo`)
+
+#### [NEW] [offline_consultation_screen.dart](file:///d:/StudioProjects/telemed_app/lib/features/offline_consultation/presentation/offline_consultation_screen.dart)
+
+Form (chief complaint + symptoms) + camera record (10s max) or photo capture + preview + submit → SQLite → sync when online
+
+#### [NEW] [offline_consultation_db.dart](file:///d:/StudioProjects/telemed_app/lib/features/offline_consultation/data/offline_consultation_db.dart)
+
+SQLite helper: [save](file:///d:/Important/Hackathons/PICT%20Tech%20Fiesta/Telemed-Web/backend/routes/ocr.js#112-122), [getPending](file:///d:/Important/Hackathons/PICT%20Tech%20Fiesta/Telemed-Web/frontend/src/utils/indexedDB.ts#261-266), `updateStatus`, [delete](file:///d:/StudioProjects/telemed_app/lib/core/network/api_client.dart#80-81)
+
+#### [NEW] [offline_consultation_sync.dart](file:///d:/StudioProjects/telemed_app/lib/features/offline_consultation/data/offline_consultation_sync.dart)
+
+Sync service uploads pending consultations to backend
+
+---
+
+## Phase 3: Add Demographics Screen
+
+Backend: GET/POST `/api/demographics`
+
+#### [NEW] [demographics_screen.dart](file:///d:/StudioProjects/telemed_app/lib/features/demographics/presentation/demographics_screen.dart)
+
+Health profile form matching [web page](file:///d:/Important/Hackathons/PICT%20Tech%20Fiesta/Telemed-Web/frontend/src/app/dashboard/demographics/page.tsx):
+- Vital stats: age, gender, height, weight, BMI (auto-calculated)
+- Medical history: history, medications, allergies, family history
+- Lifestyle: smoking, alcohol, sleep, physical activity
+
+---
+
+## Phase 4: Add Feedback Screen
+
+Backend: GET `/api/doctors`, POST `/api/feedback`
+
+#### [NEW] [feedback_screen.dart](file:///d:/StudioProjects/telemed_app/lib/features/feedback/presentation/feedback_screen.dart)
+
+Doctor star-rating screen: search/select doctor → 5-star rating + comment → submit
+
+---
+
+## Phase 5: Add Services / Appointment Booking Screen
+
+Backend: GET `/api/specializations`, GET `/api/specialization/{spec}`, POST `/api/appointments`
+
+#### [NEW] [services_screen.dart](file:///d:/StudioProjects/telemed_app/lib/features/services/presentation/services_screen.dart)
+
+3-step wizard matching [web page](file:///d:/Important/Hackathons/PICT%20Tech%20Fiesta/Telemed-Web/frontend/src/app/dashboard/services/page.tsx):
+1. Browse specializations grid
+2. View doctors in selected specialization (name, experience, online status, availability)
+3. Book appointment form (date, type: Video/Audio/In-Person, symptoms)
+
+---
+
+## Phase 6: Wire Dashboard + Doctor Dashboard to Real APIs
+
+#### [MODIFY] [dashboard_home_screen.dart](file:///d:/StudioProjects/telemed_app/lib/features/dashboard/presentation/dashboard_home_screen.dart)
+
+- Fetch real appointments via GET `/api/appointments/patient`
+- Replace mock appointment cards with real data
+
+#### [MODIFY] [doctor_dashboard_screen.dart](file:///d:/StudioProjects/telemed_app/lib/features/doctor/presentation/doctor_dashboard_screen.dart)
+
+- Fetch via GET `/api/appointments/doctor`
+- Show real patient appointments with demographics and risk scores
+
+---
+
+## Phase 7: Router + Constants + Dependencies
+
+#### [MODIFY] [api_constants.dart](file:///d:/StudioProjects/telemed_app/lib/core/constants/api_constants.dart)
+
+Add: `offlineConsultationSubmit`, `offlineConsultationPatient`, `doctorsEndpoint`, `specializationsEndpoint`, `feedbackEndpoint`
+
+#### [MODIFY] [app_router.dart](file:///d:/StudioProjects/telemed_app/lib/core/router/app_router.dart)
+
+Add routes: `/dashboard/consultation`, `/dashboard/demographics`, `/dashboard/feedback`, `/dashboard/services`
+
+#### [MODIFY] [dashboard_shell.dart](file:///d:/StudioProjects/telemed_app/lib/features/dashboard/presentation/dashboard_shell.dart)
+
+Add new items to bottom nav or navigation drawer
+
+#### [MODIFY] [pubspec.yaml](file:///d:/StudioProjects/telemed_app/pubspec.yaml)
+
+Add: `camera: ^0.11.0+2`, `connectivity_plus: ^6.1.4`, `video_player: ^2.9.3`
+
+---
+
+## Verification Plan
+
+### Automated
+- `dart analyze lib` — zero issues
+- `flutter build apk --debug` — successful build
+
+### Manual
+- Test each AI prediction form has correct fields
+- Test offline consultation: record → save → sync
+- Test demographics: save → reload
+- Test feedback: select doctor → rate → submit
+- Test services: browse → select doctor → book appointment

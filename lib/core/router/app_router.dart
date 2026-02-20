@@ -16,6 +16,10 @@ import '../../features/pharmacy/presentation/pharmacy_screen.dart';
 import '../../features/map/presentation/hospital_map_screen.dart';
 import '../../features/doctor/presentation/doctor_dashboard_screen.dart';
 import '../../features/nurse/presentation/nurse_dashboard_screen.dart';
+import '../../features/offline_consultation/presentation/offline_consultation_screen.dart';
+import '../../features/demographics/presentation/demographics_screen.dart';
+import '../../features/feedback/presentation/feedback_screen.dart';
+import '../../features/services/presentation/services_screen.dart';
 import '../utils/app_logger.dart';
 
 /// GoRouter configuration matching the React `next.config.ts` routing structure.
@@ -133,6 +137,26 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/dashboard/map',
             name: 'hospital-map',
             builder: (context, state) => const HospitalMapScreen(),
+          ),
+          GoRoute(
+            path: '/dashboard/consultation',
+            name: 'consultation',
+            builder: (context, state) => const OfflineConsultationScreen(),
+          ),
+          GoRoute(
+            path: '/dashboard/demographics',
+            name: 'demographics',
+            builder: (context, state) => const DemographicsScreen(),
+          ),
+          GoRoute(
+            path: '/dashboard/feedback',
+            name: 'feedback',
+            builder: (context, state) => const FeedbackScreen(),
+          ),
+          GoRoute(
+            path: '/dashboard/services',
+            name: 'services',
+            builder: (context, state) => const ServicesScreen(),
           ),
         ],
       ),

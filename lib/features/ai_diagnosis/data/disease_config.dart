@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-/// Disease configuration matching the React `diseaseConfig.ts`.
-///
-/// Defines 8 disease models with their input fields, icons, and configuration.
-
 enum InputType { number, text, select, image }
+
+class DiseaseInputOption {
+  final String label;
+  final dynamic value;
+  const DiseaseInputOption({required this.label, required this.value});
+}
 
 class DiseaseInput {
   final String key;
   final String label;
   final InputType type;
-  final List<({String label, dynamic value})>? options;
+  final List<DiseaseInputOption>? options;
   final String? placeholder;
-  final double? min;
-  final double? max;
-  final double? step;
+  final num? min;
+  final num? max;
+  final num? step;
 
   const DiseaseInput({
     required this.key,
@@ -29,128 +31,165 @@ class DiseaseInput {
   });
 }
 
+enum DiseaseModelType { tabular, image }
+
 class DiseaseConfig {
   final String id;
   final String name;
   final String description;
   final IconData icon;
-  final List<DiseaseInput> inputs;
-
-  /// Backend route slug under `/api/predict/`.
-  /// e.g. `heart` → POST `/api/predict/heart`
+  final DiseaseModelType type;
   final String endpoint;
+  final List<DiseaseInput> inputs;
 
   const DiseaseConfig({
     required this.id,
     required this.name,
     required this.description,
     required this.icon,
-    required this.inputs,
+    required this.type,
     required this.endpoint,
+    this.inputs = const [],
   });
 }
 
-/// All disease models available in the AI diagnosis section.
-final List<DiseaseConfig> diseaseModels = [
+const List<DiseaseConfig> diseaseModels = [
+  // --- Tabular Models ---
   DiseaseConfig(
     id: 'heart-disease',
-    endpoint: 'heart',
     name: 'Heart Disease',
-    description: 'Predict cardiovascular risk factors using patient metrics.',
+    description: 'Predict heart disease risk based on cardiovascular metrics.',
     icon: LucideIcons.heart,
+    type: DiseaseModelType.tabular,
+    endpoint: '/api/predict/heart',
     inputs: [
       DiseaseInput(key: 'age', label: 'Age', type: InputType.number, min: 1, max: 120),
-      DiseaseInput(key: 'sex', label: 'Sex', type: InputType.select, options: [(label: 'Male', value: 1), (label: 'Female', value: 0)]),
-      DiseaseInput(key: 'cp', label: 'Chest Pain Type', type: InputType.select, options: [(label: 'Typical Angina', value: 0), (label: 'Atypical Angina', value: 1), (label: 'Non-anginal', value: 2), (label: 'Asymptomatic', value: 3)]),
-      DiseaseInput(key: 'trestbps', label: 'Resting BP (mmHg)', type: InputType.number, min: 80, max: 200),
-      DiseaseInput(key: 'chol', label: 'Cholesterol (mg/dl)', type: InputType.number, min: 100, max: 600),
-      DiseaseInput(key: 'thalach', label: 'Max Heart Rate', type: InputType.number, min: 60, max: 220),
+      DiseaseInput(key: 'sex', label: 'Sex', type: InputType.select, options: [DiseaseInputOption(label: 'Male', value: 1), DiseaseInputOption(label: 'Female', value: 0)]),
+      DiseaseInput(key: 'cp', label: 'Chest Pain Type', type: InputType.select, options: [DiseaseInputOption(label: 'Typical Angina', value: 0), DiseaseInputOption(label: 'Atypical Angina', value: 1), DiseaseInputOption(label: 'Non-anginal Pain', value: 2), DiseaseInputOption(label: 'Asymptomatic', value: 3)]),
+      DiseaseInput(key: 'trestbps', label: 'Resting Blood Pressure (mm Hg)', type: InputType.number, min: 80, max: 200),
+      DiseaseInput(key: 'chol', label: 'Serum Cholestoral (mg/dl)', type: InputType.number, min: 100, max: 600),
+      DiseaseInput(key: 'fbs', label: 'Fasting Blood Sugar > 120 mg/dl', type: InputType.select, options: [DiseaseInputOption(label: 'True', value: 1), DiseaseInputOption(label: 'False', value: 0)]),
+      DiseaseInput(key: 'restecg', label: 'Resting ECG Results', type: InputType.select, options: [DiseaseInputOption(label: 'Normal', value: 0), DiseaseInputOption(label: 'ST-T Wave Abnormality', value: 1), DiseaseInputOption(label: 'Left Ventricular Hypertrophy', value: 2)]),
+      DiseaseInput(key: 'thalach', label: 'Max Heart Rate Achieved', type: InputType.number, min: 60, max: 220),
+      DiseaseInput(key: 'exang', label: 'Exercise Induced Angina', type: InputType.select, options: [DiseaseInputOption(label: 'Yes', value: 1), DiseaseInputOption(label: 'No', value: 0)]),
+      DiseaseInput(key: 'oldpeak', label: 'ST Depression Induced by Exercise', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'slope', label: 'Slope of Peak Exercise ST Segment', type: InputType.select, options: [DiseaseInputOption(label: 'Upsloping', value: 0), DiseaseInputOption(label: 'Flat', value: 1), DiseaseInputOption(label: 'Downsloping', value: 2)]),
+      DiseaseInput(key: 'ca', label: 'Number of Major Vessels', type: InputType.number, min: 0, max: 3),
+      DiseaseInput(key: 'thal', label: 'Thalassemia', type: InputType.select, options: [DiseaseInputOption(label: 'Normal', value: 1), DiseaseInputOption(label: 'Fixed Defect', value: 2), DiseaseInputOption(label: 'Reversable Defect', value: 3)]),
     ],
   ),
   DiseaseConfig(
     id: 'diabetes',
-    endpoint: 'diabetes',
     name: 'Diabetes',
-    description: 'Assess diabetes risk using health indicators.',
+    description: 'Assess the likelihood of diabetes based on health indicators.',
     icon: LucideIcons.syringe,
+    type: DiseaseModelType.tabular,
+    endpoint: '/api/predict/diabetes',
     inputs: [
-      DiseaseInput(key: 'Pregnancies', label: 'Pregnancies', type: InputType.number, min: 0, max: 20),
+      DiseaseInput(key: 'Pregnancies', label: 'Number of Pregnancies', type: InputType.number, min: 0, max: 20),
       DiseaseInput(key: 'Glucose', label: 'Glucose Level', type: InputType.number, min: 0, max: 300),
       DiseaseInput(key: 'BloodPressure', label: 'Blood Pressure', type: InputType.number, min: 0, max: 200),
-      DiseaseInput(key: 'BMI', label: 'BMI', type: InputType.number, min: 10, max: 60, step: 0.1),
+      DiseaseInput(key: 'SkinThickness', label: 'Skin Thickness', type: InputType.number, min: 0, max: 100),
+      DiseaseInput(key: 'Insulin', label: 'Insulin Level', type: InputType.number, min: 0, max: 900),
+      DiseaseInput(key: 'BMI', label: 'BMI', type: InputType.number, step: 0.1, min: 10, max: 60),
+      DiseaseInput(key: 'DiabetesPedigreeFunction', label: 'Diabetes Pedigree Function', type: InputType.number, step: 0.001),
       DiseaseInput(key: 'Age', label: 'Age', type: InputType.number, min: 1, max: 120),
-    ],
-  ),
-  DiseaseConfig(
-    id: 'parkinsons',
-    endpoint: 'parkinsons',
-    name: "Parkinson's Disease",
-    description: 'Detect early signs of Parkinson\'s from voice metrics.',
-    icon: LucideIcons.brain,
-    inputs: [
-      DiseaseInput(key: 'fo', label: 'Avg Vocal Freq (Hz)', type: InputType.number, min: 50, max: 300, step: 0.01),
-      DiseaseInput(key: 'fhi', label: 'Max Vocal Freq (Hz)', type: InputType.number, min: 50, max: 600, step: 0.01),
-      DiseaseInput(key: 'flo', label: 'Min Vocal Freq (Hz)', type: InputType.number, min: 50, max: 300, step: 0.01),
-    ],
-  ),
-  DiseaseConfig(
-    id: 'breast-cancer',
-    endpoint: 'breast-cancer',
-    name: 'Breast Cancer',
-    description: 'Evaluate breast cancer indicators from cell measurements.',
-    icon: LucideIcons.fileText,
-    inputs: [
-      DiseaseInput(key: 'radius_mean', label: 'Mean Radius', type: InputType.number, min: 0, max: 30, step: 0.01),
-      DiseaseInput(key: 'texture_mean', label: 'Mean Texture', type: InputType.number, min: 0, max: 40, step: 0.01),
-      DiseaseInput(key: 'perimeter_mean', label: 'Mean Perimeter', type: InputType.number, min: 0, max: 200, step: 0.01),
     ],
   ),
   DiseaseConfig(
     id: 'liver-disease',
-    endpoint: 'liver',
     name: 'Liver Disease',
-    description: 'Assess liver health based on blood test results.',
+    description: 'Screen for liver disease using blood markers.',
     icon: LucideIcons.activity,
+    type: DiseaseModelType.tabular,
+    endpoint: '/api/predict/liver',
     inputs: [
-      DiseaseInput(key: 'Age', label: 'Age', type: InputType.number, min: 1, max: 120),
-      DiseaseInput(key: 'Total_Bilirubin', label: 'Total Bilirubin', type: InputType.number, min: 0, max: 80, step: 0.1),
-      DiseaseInput(key: 'Alkaline_Phosphotase', label: 'Alkaline Phosphatase', type: InputType.number, min: 0, max: 2500),
+      DiseaseInput(key: 'age', label: 'Age', type: InputType.number, min: 1, max: 120),
+      DiseaseInput(key: 'gender', label: 'Gender', type: InputType.select, options: [DiseaseInputOption(label: 'Male', value: 1), DiseaseInputOption(label: 'Female', value: 0)]),
+      DiseaseInput(key: 'total_bilirubin', label: 'Total Bilirubin', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'direct_bilirubin', label: 'Direct Bilirubin', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'alkphos', label: 'Alkaline Phosphotase', type: InputType.number),
+      DiseaseInput(key: 'sgpt', label: 'Alamine Aminotransferase', type: InputType.number),
+      DiseaseInput(key: 'sgot', label: 'Aspartate Aminotransferase', type: InputType.number),
+      DiseaseInput(key: 'total_proteins', label: 'Total Proteins', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'albumin', label: 'Albumin', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'ag_ratio', label: 'Albumin and Globulin Ratio', type: InputType.number, step: 0.1),
     ],
   ),
   DiseaseConfig(
     id: 'kidney-disease',
-    endpoint: 'ckd',
-    name: 'Kidney Disease',
-    description: 'Evaluate kidney function from clinical parameters.',
-    icon: LucideIcons.thermometer,
+    name: 'Kidney Disease (CKD)',
+    description: 'Chronic Kidney Disease prediction.',
+    icon: LucideIcons.activity,
+    type: DiseaseModelType.tabular,
+    endpoint: '/api/predict/ckd',
     inputs: [
-      DiseaseInput(key: 'age', label: 'Age', type: InputType.number, min: 1, max: 120),
-      DiseaseInput(key: 'bp', label: 'Blood Pressure', type: InputType.number, min: 50, max: 180),
-      DiseaseInput(key: 'sg', label: 'Specific Gravity', type: InputType.number, min: 1.0, max: 1.03, step: 0.005),
-      DiseaseInput(key: 'su', label: 'Sugar', type: InputType.select, options: [(label: '0', value: 0), (label: '1', value: 1), (label: '2', value: 2), (label: '3', value: 3)]),
+      DiseaseInput(key: 'age', label: 'Age', type: InputType.number),
+      DiseaseInput(key: 'bp', label: 'Blood Pressure', type: InputType.number),
+      DiseaseInput(key: 'sg', label: 'Specific Gravity', type: InputType.number, step: 0.005),
+      DiseaseInput(key: 'al', label: 'Albumin', type: InputType.number),
+      DiseaseInput(key: 'su', label: 'Sugar', type: InputType.number),
+      DiseaseInput(key: 'rbc', label: 'Red Blood Cells', type: InputType.select, options: [DiseaseInputOption(label: 'Normal', value: 1), DiseaseInputOption(label: 'Abnormal', value: 0)]),
+      DiseaseInput(key: 'pc', label: 'Pus Cell', type: InputType.select, options: [DiseaseInputOption(label: 'Normal', value: 1), DiseaseInputOption(label: 'Abnormal', value: 0)]),
+      DiseaseInput(key: 'pcc', label: 'Pus Cell Clumps', type: InputType.select, options: [DiseaseInputOption(label: 'Present', value: 1), DiseaseInputOption(label: 'Not Present', value: 0)]),
+      DiseaseInput(key: 'ba', label: 'Bacteria', type: InputType.select, options: [DiseaseInputOption(label: 'Present', value: 1), DiseaseInputOption(label: 'Not Present', value: 0)]),
+      DiseaseInput(key: 'bgr', label: 'Blood Glucose Random', type: InputType.number),
+      DiseaseInput(key: 'bu', label: 'Blood Urea', type: InputType.number),
+      DiseaseInput(key: 'sc', label: 'Serum Creatinine', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'sod', label: 'Sodium', type: InputType.number),
+      DiseaseInput(key: 'pot', label: 'Potassium', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'hemo', label: 'Hemoglobin', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'pcv', label: 'Packed Cell Volume', type: InputType.number),
+      DiseaseInput(key: 'wc', label: 'White Blood Cell Count', type: InputType.number),
+      DiseaseInput(key: 'rc', label: 'Red Blood Cell Count', type: InputType.number, step: 0.1),
+      DiseaseInput(key: 'htn', label: 'Hypertension', type: InputType.select, options: [DiseaseInputOption(label: 'Yes', value: 1), DiseaseInputOption(label: 'No', value: 0)]),
+      DiseaseInput(key: 'dm', label: 'Diabetes Mellitus', type: InputType.select, options: [DiseaseInputOption(label: 'Yes', value: 1), DiseaseInputOption(label: 'No', value: 0)]),
+      DiseaseInput(key: 'cad', label: 'Coronary Artery Disease', type: InputType.select, options: [DiseaseInputOption(label: 'Yes', value: 1), DiseaseInputOption(label: 'No', value: 0)]),
+      DiseaseInput(key: 'appet', label: 'Appetite', type: InputType.select, options: [DiseaseInputOption(label: 'Good', value: 1), DiseaseInputOption(label: 'Poor', value: 0)]),
+      DiseaseInput(key: 'pe', label: 'Pedal Edema', type: InputType.select, options: [DiseaseInputOption(label: 'Yes', value: 1), DiseaseInputOption(label: 'No', value: 0)]),
+      DiseaseInput(key: 'ane', label: 'Anemia', type: InputType.select, options: [DiseaseInputOption(label: 'Yes', value: 1), DiseaseInputOption(label: 'No', value: 0)]),
     ],
   ),
-  DiseaseConfig(
-    id: 'hepatitis',
-    endpoint: 'hepatitis',
-    name: 'Hepatitis',
-    description: 'Screen for hepatitis using clinical symptoms and tests.',
-    icon: LucideIcons.eye,
-    inputs: [
-      DiseaseInput(key: 'Age', label: 'Age', type: InputType.number, min: 1, max: 120),
-      DiseaseInput(key: 'Sex', label: 'Sex', type: InputType.select, options: [(label: 'Male', value: 1), (label: 'Female', value: 2)]),
-      DiseaseInput(key: 'ALB', label: 'Albumin', type: InputType.number, min: 0, max: 10, step: 0.1),
-      DiseaseInput(key: 'ALP', label: 'Alkaline Phosphatase', type: InputType.number, min: 0, max: 500),
-    ],
-  ),
+
+  // --- Image Models ---
   DiseaseConfig(
     id: 'pneumonia',
-    endpoint: 'pneumonia',
     name: 'Pneumonia Detection',
-    description: 'Detect pneumonia from chest X-ray images using AI.',
+    description: 'Upload a Chest X-ray to detect pneumonia.',
     icon: LucideIcons.image,
-    inputs: [
-      DiseaseInput(key: 'image', label: 'Chest X-Ray Image', type: InputType.image, placeholder: 'Upload chest X-ray'),
-    ],
+    type: DiseaseModelType.image,
+    endpoint: '/api/predict/pneumonia',
+  ),
+  DiseaseConfig(
+    id: 'tuberculosis',
+    name: 'Tuberculosis (TB)',
+    description: 'Upload a Chest X-ray to screen for TB.',
+    icon: LucideIcons.image,
+    type: DiseaseModelType.image,
+    endpoint: '/api/predict/tb',
+  ),
+  DiseaseConfig(
+    id: 'brain-tumor',
+    name: 'Brain Tumor',
+    description: 'Upload an MRI scan to detect brain tumors.',
+    icon: LucideIcons.brain,
+    type: DiseaseModelType.image,
+    endpoint: '/api/predict/brain-tumor',
+  ),
+  DiseaseConfig(
+    id: 'retinopathy',
+    name: 'Diabetic Retinopathy',
+    description: 'Upload a retinal scan image.',
+    icon: LucideIcons.eye,
+    type: DiseaseModelType.image,
+    endpoint: '/api/predict/retinopathy',
+  ),
+  DiseaseConfig(
+    id: 'skin-disease',
+    name: 'Skin Disease',
+    description: 'Upload an image of the skin condition.',
+    icon: LucideIcons.thermometer,
+    type: DiseaseModelType.image,
+    endpoint: '/api/predict/skin',
   ),
 ];
