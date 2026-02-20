@@ -108,68 +108,72 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: '/dashboard',
             name: 'dashboard',
             builder: (context, state) => const DashboardHomeScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/triage',
-            name: 'triage',
-            builder: (context, state) => const TriageScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/ai-diagnosis',
-            name: 'ai-diagnosis',
-            builder: (context, state) => const AiDiagnosisListScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/ai-diagnosis/:id',
-            name: 'ai-diagnosis-detail',
-            builder: (context, state) => AiDiagnosisDetailScreen(
-              modelId: state.pathParameters['id']!,
-            ),
-          ),
-          GoRoute(
-            path: '/dashboard/records',
-            name: 'records',
-            builder: (context, state) => const RecordsScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/pharmacy',
-            name: 'pharmacy',
-            builder: (context, state) => const PharmacyScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/pharmacy-cart',
-            name: 'pharmacy-cart',
-            builder: (context, state) => const PharmacyCartScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/map',
-            name: 'hospital-map',
-            builder: (context, state) => const HospitalMapScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/consultation',
-            name: 'consultation',
-            builder: (context, state) => const OfflineConsultationScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/consultation-history',
-            name: 'consultation-history',
-            builder: (context, state) => const OfflineConsultationListScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/demographics',
-            name: 'demographics',
-            builder: (context, state) => const DemographicsScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/feedback',
-            name: 'feedback',
-            builder: (context, state) => const FeedbackScreen(),
-          ),
-          GoRoute(
-            path: '/dashboard/services',
-            name: 'services',
-            builder: (context, state) => const ServicesScreen(),
+            routes: [
+              GoRoute(
+                path: 'triage',
+                name: 'triage',
+                builder: (context, state) => const TriageScreen(),
+              ),
+              GoRoute(
+                path: 'ai-diagnosis',
+                name: 'ai-diagnosis',
+                builder: (context, state) => const AiDiagnosisListScreen(),
+                routes: [
+                  GoRoute(
+                    path: ':id',
+                    name: 'ai-diagnosis-detail',
+                    builder: (context, state) => AiDiagnosisDetailScreen(
+                      modelId: state.pathParameters['id']!,
+                    ),
+                  ),
+                ]
+              ),
+              GoRoute(
+                path: 'records',
+                name: 'records',
+                builder: (context, state) => const RecordsScreen(),
+              ),
+              GoRoute(
+                path: 'pharmacy',
+                name: 'pharmacy',
+                builder: (context, state) => const PharmacyScreen(),
+              ),
+              GoRoute(
+                path: 'pharmacy-cart',
+                name: 'pharmacy-cart',
+                builder: (context, state) => const PharmacyCartScreen(),
+              ),
+              GoRoute(
+                path: 'map',
+                name: 'hospital-map',
+                builder: (context, state) => const HospitalMapScreen(),
+              ),
+              GoRoute(
+                path: 'consultation',
+                name: 'consultation',
+                builder: (context, state) => const OfflineConsultationScreen(),
+              ),
+              GoRoute(
+                path: 'consultation-history',
+                name: 'consultation-history',
+                builder: (context, state) => const OfflineConsultationListScreen(),
+              ),
+              GoRoute(
+                path: 'demographics',
+                name: 'demographics',
+                builder: (context, state) => const DemographicsScreen(),
+              ),
+              GoRoute(
+                path: 'feedback',
+                name: 'feedback',
+                builder: (context, state) => const FeedbackScreen(),
+              ),
+              GoRoute(
+                path: 'services',
+                name: 'services',
+                builder: (context, state) => const ServicesScreen(),
+              ),
+            ],
           ),
         ],
       ),
@@ -179,11 +183,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/doctor',
         name: 'doctor-dashboard',
         builder: (context, state) => const DoctorDashboardScreen(),
-      ),
-      GoRoute(
-        path: '/doctor/consultation-review',
-        name: 'doctor-consultation-review',
-        builder: (context, state) => const OfflineConsultationReviewScreen(),
+        routes: [
+          GoRoute(
+            path: 'consultation-review',
+            name: 'doctor-consultation-review',
+            builder: (context, state) => const OfflineConsultationReviewScreen(),
+          ),
+        ]
       ),
 
       // Nurse Dashboard

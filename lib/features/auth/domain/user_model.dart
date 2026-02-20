@@ -38,11 +38,11 @@ class User {
 
   /// Construct from decoded JWT payload: { id, email, role, iat, exp }.
   /// JWT does not contain `name`, so we fall back to the email prefix.
-  factory User.fromJwt(Map<String, dynamic> payload) {
+  factory User.fromJwt(Map<String, dynamic> payload, {String? storedName}) {
     final email = (payload['email'] as String?) ?? '';
     return User(
       id: (payload['id'] ?? payload['user_id'] ?? 0) as int,
-      name: email.split('@').first, // best effort from JWT
+      name: storedName ?? email.split('@').first, // best effort from JWT
       email: email,
       role: UserRole.values.firstWhere(
         (r) => r.name == payload['role'],

@@ -38,8 +38,11 @@ class AuthRepository {
     final data = response.data as Map<String, dynamic>;
     final token = data['token'] as String;
 
-    // Save token securely
+    // Save token and name securely
     await _storage.write(key: 'auth_token', value: token);
+    if (data['name'] != null) {
+      await _storage.write(key: 'user_name', value: data['name']);
+    }
     AppLogger.auth('Login successful, token stored');
 
     return User.fromJson(data);
@@ -69,6 +72,7 @@ class AuthRepository {
     final token = data['token'] as String;
 
     await _storage.write(key: 'auth_token', value: token);
+    await _storage.write(key: 'user_name', value: name);
     AppLogger.auth('Registration successful, token stored');
 
     return User.fromJson(data);
@@ -108,7 +112,8 @@ class AuthRepository {
       }
 
       // JWT payload has: { id, email, role, iat, exp }
-      final user = User.fromJwt(payload);
+      final name = await _storage.read(key: 'user_name');
+      final user = User.fromJwt(payload, storedName: name);
       AppLogger.auth('Restored session for ${user.name} (from JWT)');
       return user;
     } catch (e) {
@@ -141,6 +146,7 @@ class AuthRepository {
   /// Clear stored credentials.
   Future<void> logout() async {
     await _storage.delete(key: 'auth_token');
+    await _storage.delete(key: 'user_name');
     AppLogger.auth('Logged out, token cleared');
   }
 

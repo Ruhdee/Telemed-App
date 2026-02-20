@@ -13,7 +13,10 @@ class DashboardShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouterState.of(context).uri.path;
-    final userName = ref.watch(authProvider).valueOrNull?.name ?? 'User';
+    final user = ref.watch(authProvider).valueOrNull;
+    final userName = user?.name ?? 'User';
+    final userEmail = user?.email ?? 'patient@telemed.com';
+    final userRole = user?.role.name.toUpperCase() ?? 'PATIENT';
 
     int currentIndex = _calculateSelectedIndex(location);
 
@@ -22,8 +25,8 @@ class DashboardShell extends ConsumerWidget {
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              accountName: Text(userName),
-              accountEmail: const Text('Patient'),
+              accountName: Text('$userName ($userRole)'),
+              accountEmail: Text(userEmail),
               decoration: const BoxDecoration(gradient: AppColors.goldGradient),
               currentAccountPicture: const CircleAvatar(
                 backgroundColor: Colors.white,
