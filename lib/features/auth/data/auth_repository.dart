@@ -38,14 +38,15 @@ class AuthRepository {
     final data = response.data as Map<String, dynamic>;
     final token = data['token'] as String;
 
-    // Save token and name securely
+    final user = User.fromJson(data);
+
+    // Save token and user securely
     await _storage.write(key: 'auth_token', value: token);
-    if (data['name'] != null) {
-      await _storage.write(key: 'user_name', value: data['name']);
-    }
+    await _storage.write(key: 'user_data', value: jsonEncode(user.toJson()));
+    
     AppLogger.auth('Login successful, token stored');
 
-    return User.fromJson(data);
+    return user;
   }
 
   /// Register a new user.
@@ -71,11 +72,14 @@ class AuthRepository {
     final data = response.data as Map<String, dynamic>;
     final token = data['token'] as String;
 
+    final user = User.fromJson(data);
+
     await _storage.write(key: 'auth_token', value: token);
-    await _storage.write(key: 'user_name', value: name);
+    await _storage.write(key: 'user_data', value: jsonEncode(user.toJson()));
+    
     AppLogger.auth('Registration successful, token stored');
 
-    return User.fromJson(data);
+    return user;
   }
 
   /// Fetch the current user from stored token.
@@ -84,8 +88,10 @@ class AuthRepository {
   /// the JWT locally to extract user info (id, email, role).
   Future<User?> getCurrentUser() async {
     final token = await _storage.read(key: 'auth_token');
-    if (token == null) {
-      AppLogger.auth('No stored token found');
+    final userJson = await _storage.read(key: 'user_data');
+    
+    if (token == null || userJson == null) {
+      AppLogger.auth('No stored token or user found');
       return null;
     }
 
@@ -111,10 +117,11 @@ class AuthRepository {
         }
       }
 
-      // JWT payload has: { id, email, role, iat, exp }
-      final name = await _storage.read(key: 'user_name');
-      final user = User.fromJwt(payload, storedName: name);
-      AppLogger.auth('Restored session for ${user.name} (from JWT)');
+      // Restore full User object from cache
+      final userMap = jsonDecode(userJson) as Map<String, dynamic>;
+      final user = User.fromJson(userMap);
+      
+      AppLogger.auth('Restored session for ${user.name} (from SecureStorage)');
       return user;
     } catch (e) {
       AppLogger.error('AUTH', 'Failed to restore session from JWT', e);
@@ -146,7 +153,8 @@ class AuthRepository {
   /// Clear stored credentials.
   Future<void> logout() async {
     await _storage.delete(key: 'auth_token');
-    await _storage.delete(key: 'user_name');
+    await _storage.delete(key: 'user_data');
+    await _storage.delete(key: 'user_name'); // Clear deprecated key too
     AppLogger.auth('Logged out, token cleared');
   }
 

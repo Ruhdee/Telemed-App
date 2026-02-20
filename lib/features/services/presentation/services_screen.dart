@@ -24,7 +24,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   // Step 1: Specializations
   bool _isLoadingSpecs = true;
   List<dynamic> _specializations = [];
-  Map<String, dynamic>? _selectedSpec;
+  String? _selectedSpec;
 
   // Step 2: Doctors in Specialization
   bool _isLoadingDoctors = false;
@@ -229,13 +229,12 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
       ),
       itemCount: _specializations.length,
       itemBuilder: (context, index) {
-        final spec = _specializations[index];
-        final name = spec['name'] ?? 'Unknown';
+        final name = _specializations[index].toString();
         
         return InkWell(
           onTap: () {
             setState(() {
-              _selectedSpec = spec;
+              _selectedSpec = name;
               _currentStep = 2;
             });
             _loadDoctorsForSpec(name);
@@ -278,7 +277,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
           children: [
             const Icon(LucideIcons.userX, size: 64, color: AppColors.textMuted),
             const SizedBox(height: 16),
-            Text('No doctors available for ${_selectedSpec?['name']}', style: const TextStyle(color: AppColors.textMuted)),
+            Text('No doctors available for $_selectedSpec', style: const TextStyle(color: AppColors.textMuted)),
           ],
         ),
       );
@@ -303,7 +302,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                 child: Icon(LucideIcons.user, color: Colors.white),
               ),
               title: Text('Dr. $name', style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text('$exp years experience\n${_selectedSpec?['name']}', style: const TextStyle(fontSize: 12)),
+              subtitle: Text('$exp years experience\n$_selectedSpec', style: const TextStyle(fontSize: 12)),
               trailing: AppButton(
                 label: 'Book',
                 variant: AppButtonVariant.primary,
@@ -337,7 +336,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Dr. ${_selectedDoctor?['userId']?['name'] ?? _selectedDoctor?['name'] ?? 'Unknown'}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                      Text('${_selectedSpec?['name'] ?? ''}', style: const TextStyle(color: AppColors.textSecondary)),
+                      Text('$_selectedSpec', style: const TextStyle(color: AppColors.textSecondary)),
                     ],
                   ),
                 ),
