@@ -1,0 +1,276 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lucide_icons/lucide_icons.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/app_logger.dart';
+
+import '../../../core/constants/api_constants.dart';
+import '../../../shared/widgets/app_button.dart';
+import '../../../shared/widgets/glass_panel.dart';
+import '../../auth/providers/auth_provider.dart';
+
+/// AI Triage screen matching the React `triage/page.tsx`.
+///
+/// Symptom form → submits to /api/triage → displays AI risk assessment.
+class TriageScreen extends ConsumerStatefulWidget {
+  const TriageScreen({super.key});
+
+  @override
+  ConsumerState<TriageScreen> createState() => _TriageScreenState();
+}
+
+class _TriageScreenState extends ConsumerState<TriageScreen> {
+  final _chiefComplaintController = TextEditingController();
+  final _symptomsController = TextEditingController();
+  String _severity = 'moderate';
+  String _duration = 'days';
+  bool _isLoading = false;
+  Map<String, dynamic>? _result;
+
+  @override
+  void dispose() {
+    _chiefComplaintController.dispose();
+    _symptomsController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitTriage() async {
+    if (_chiefComplaintController.text.isEmpty) return;
+
+    setState(() {
+      _isLoading = true;
+      _result = null;
+    });
+
+    AppLogger.ai('Submitting triage: ${_chiefComplaintController.text}');
+
+    try {
+      final apiClient = ref.read(apiClientProvider);
+      final response = await apiClient.post(
+        ApiConstants.triageEndpoint,
+        data: {
+          'chiefComplaint': _chiefComplaintController.text,
+          'symptomsDescription': _symptomsController.text,
+          'severity': _severity,
+          'duration': _duration,
+        },
+      );
+
+      final data = response.data as Map<String, dynamic>;
+      setState(() {
+        _result = data;
+        _isLoading = false;
+      });
+      AppLogger.ai('Triage result received', data);
+    } catch (e) {
+      AppLogger.error('AI', 'Triage submission failed', e);
+      setState(() => _isLoading = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Triage failed: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('AI Symptom Triage')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            GlassPanel(
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(colors: [Color(0xFF06B6D4), Color(0xFF0891B2)]),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(LucideIcons.stethoscope, color: Colors.white, size: 24),
+                  ),
+                  const SizedBox(width: 14),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('AI-Powered Triage', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                        Text('Describe your symptoms for instant risk assessment', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ).animate().fadeIn(),
+
+            const SizedBox(height: 24),
+
+            // Chief Complaint
+            Text('Chief Complaint *', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _chiefComplaintController,
+              decoration: const InputDecoration(
+                hintText: 'e.g., Severe headache, chest pain...',
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Symptoms Description
+            Text('Describe Your Symptoms', style: Theme.of(context).textTheme.labelLarge),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _symptomsController,
+              maxLines: 4,
+              decoration: const InputDecoration(
+                hintText: 'Include duration, severity, triggers, and any other relevant details...',
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Severity & Duration row
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Severity', style: Theme.of(context).textTheme.labelLarge),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        initialValue: _severity,
+                        items: const [
+                          DropdownMenuItem(value: 'mild', child: Text('Mild')),
+                          DropdownMenuItem(value: 'moderate', child: Text('Moderate')),
+                          DropdownMenuItem(value: 'severe', child: Text('Severe')),
+                        ],
+                        onChanged: (v) => setState(() => _severity = v ?? 'moderate'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Duration', style: Theme.of(context).textTheme.labelLarge),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        initialValue: _duration,
+                        items: const [
+                          DropdownMenuItem(value: 'hours', child: Text('Hours')),
+                          DropdownMenuItem(value: 'days', child: Text('Days')),
+                          DropdownMenuItem(value: 'weeks', child: Text('Weeks')),
+                          DropdownMenuItem(value: 'months', child: Text('Months')),
+                        ],
+                        onChanged: (v) => setState(() => _duration = v ?? 'days'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 28),
+
+            // Submit button
+            AppButton(
+              label: 'Analyze Symptoms',
+              variant: AppButtonVariant.primary,
+              isLoading: _isLoading,
+              onPressed: _submitTriage,
+              width: double.infinity,
+              icon: const Icon(LucideIcons.brain, color: Colors.white, size: 18),
+            ),
+
+            if (_result != null) ...[
+              const SizedBox(height: 28),
+              _TriageResult(result: _result!).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Triage Result Card ─────────────────────────────────────────
+
+class _TriageResult extends StatelessWidget {
+  final Map<String, dynamic> result;
+
+  const _TriageResult({required this.result});
+
+  @override
+  Widget build(BuildContext context) {
+    final riskLevel = result['riskLevel'] as String? ?? 'unknown';
+    final score = result['score'] as int? ?? 0;
+    final recommendation = result['recommendation'] as String? ?? '';
+    final analysis = result['analysis'] as String? ?? '';
+
+    return GlassPanel(
+      borderColor: _riskColor(riskLevel).withValues(alpha: 0.5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Risk badge
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _riskColor(riskLevel).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: _riskColor(riskLevel).withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(LucideIcons.alertTriangle, size: 14, color: _riskColor(riskLevel)),
+                    const SizedBox(width: 6),
+                    Text(
+                      '${riskLevel.toUpperCase()} RISK',
+                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: _riskColor(riskLevel)),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              Text('Score: $score', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (analysis.isNotEmpty) ...[
+            const Text('AI Analysis', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+            const SizedBox(height: 6),
+            Text(analysis, style: const TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary)),
+            const SizedBox(height: 12),
+          ],
+          if (recommendation.isNotEmpty) ...[
+            const Text('Recommendation', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+            const SizedBox(height: 6),
+            Text(recommendation, style: const TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary)),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Color _riskColor(String level) {
+    switch (level) {
+      case 'high': return AppColors.riskHigh;
+      case 'medium': return AppColors.riskMedium;
+      default: return AppColors.riskLow;
+    }
+  }
+}

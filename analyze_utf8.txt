@@ -1,0 +1,13 @@
+Analyzing lib...
+
+  error - features\map\presentation\hospital_map_screen.dart:105:111 - The getter 'tomTomApiKey' isn't defined for the type 'ApiConstants'. Try importing the library that defines 'tomTomApiKey', correcting the name to the name of an existing getter, or defining a getter or field named 'tomTomApiKey'. - undefined_getter
+warning - core\router\app_router.dart:1:8 - Unused import: 'package:flutter/material.dart'. Try removing the import directive. - unused_import
+warning - features\auth\data\auth_repository.dart:1:8 - Unused import: 'dart:convert'. Try removing the import directive. - unused_import
+warning - features\pharmacy\presentation\pharmacy_screen.dart:7:8 - Unused import: '../../../core/constants/api_constants.dart'. Try removing the import directive. - unused_import
+warning - features\pharmacy\presentation\pharmacy_screen.dart:8:8 - Unused import: '../../../shared/widgets/app_button.dart'. Try removing the import directive. - unused_import
+warning - features\records\presentation\records_screen.dart:7:8 - Unused import: 'dart:io'. Try removing the import directive. - unused_import
+   info - features\auth\presentation\login_screen.dart:179:29 - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - features\auth\presentation\register_screen.dart:164:29 - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+   info - features\dashboard\presentation\dashboard_home_screen.dart:71:47 - Unnecessary use of multiple underscores. Try using '_'. - unnecessary_underscores
+
+9 issues found.
