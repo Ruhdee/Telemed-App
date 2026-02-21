@@ -26,6 +26,8 @@ import '../../features/online_consultation/presentation/book_appointment_screen.
 import '../../features/demographics/presentation/demographics_screen.dart';
 import '../../features/feedback/presentation/feedback_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
+import '../../features/settings/presentation/language_settings_screen.dart';
+import '../../features/profile/presentation/profile_screen.dart';
 import '../utils/app_logger.dart';
 
 /// GoRouter configuration matching the React `next.config.ts` routing structure.
@@ -185,6 +187,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 builder: (context, state) => const DemographicsScreen(),
               ),
               GoRoute(
+                path: 'profile',
+                name: 'profile',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+              GoRoute(
                 path: 'feedback',
                 name: 'feedback',
                 builder: (context, state) => const FeedbackScreen(),
@@ -198,6 +205,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'book-appointment',
                 name: 'book-appointment',
                 builder: (context, state) => const BookAppointmentScreen(),
+              ),
+              GoRoute(
+                path: 'language-settings',
+                name: 'language-settings',
+                builder: (context, state) => const LanguageSettingsScreen(),
               ),
             ],
           ),

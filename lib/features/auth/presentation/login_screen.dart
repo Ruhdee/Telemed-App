@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/glass_panel.dart';
 import '../domain/user_model.dart';
@@ -49,13 +50,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    final loc = AppLocalizations.of(context);
 
     // Listen for errors
     ref.listen(authProvider, (previous, next) {
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Login failed: ${next.error}'),
+            content: Text('${loc.translate('loginFailed')}: ${next.error}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -111,14 +113,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 24),
 
                   Text(
-                    'Welcome Back',
+                    loc.translate('welcomeBack'),
                     style: Theme.of(context).textTheme.displayMedium,
                   ).animate().fadeIn(delay: 100.ms),
 
                   const SizedBox(height: 8),
 
                   Text(
-                    'Sign in to your TeleMedCare account',
+                    loc.translate('loginToContinue'),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ).animate().fadeIn(delay: 150.ms),
 
@@ -136,14 +138,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
-                              labelText: 'Email',
-                              hintText: 'you@example.com',
-                              prefixIcon: Icon(Icons.email_outlined),
+                            decoration: InputDecoration(
+                              labelText: loc.translate('email'),
+                              hintText: loc.translate('emailHint'),
+                              prefixIcon: const Icon(Icons.email_outlined),
                             ),
                             validator: (v) {
-                              if (v == null || v.isEmpty) return 'Email required';
-                              if (!v.contains('@')) return 'Invalid email';
+                              if (v == null || v.isEmpty) return loc.translate('invalidEmail');
+                              if (!v.contains('@')) return loc.translate('invalidEmail');
                               return null;
                             },
                           ),
@@ -155,8 +157,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             controller: _passwordController,
                             obscureText: _obscurePassword,
                             decoration: InputDecoration(
-                              labelText: 'Password',
-                              hintText: '••••••••',
+                              labelText: loc.translate('password'),
+                              hintText: loc.translate('passwordHint'),
                               prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
                                 icon: Icon(

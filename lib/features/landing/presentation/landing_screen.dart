@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/glass_panel.dart';
 
@@ -22,6 +23,8 @@ class LandingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -68,13 +71,13 @@ class LandingScreen extends StatelessWidget {
                 actions: [
                   TextButton(
                     onPressed: onLogin,
-                    child: const Text('Log In'),
+                    child: Text(loc.translate('logIn')),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: ElevatedButton(
                       onPressed: onRegister,
-                      child: const Text('Get Started'),
+                      child: Text(loc.translate('getStarted')),
                     ),
                   ),
                 ],

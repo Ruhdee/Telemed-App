@@ -144,6 +144,12 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
 
   /// Main initialization sequence
   Future<void> _initialize() async {
+    // ✅ GUARD: Prevent re-initialization
+    if (_isInitialized) {
+      print('[PatientVideo] Already initialized, skipping');
+      return;
+    }
+
     try {
       setState(() => _statusText = 'Setting up renderers...');
 
@@ -193,6 +199,15 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
 
   /// Connect to socket.io signaling server
   Future<void> _connectSignaling() async {
+    // ✅ CLEANUP: Dispose old socket and remove all listeners before creating new one
+    if (_socket != null) {
+      print('[PatientVideo] Cleaning up old socket connection');
+      _socket!.clearListeners();
+      _socket!.disconnect();
+      _socket!.dispose();
+      _socket = null;
+    }
+
     _socket = IO.io(
       ApiConstants.baseUrl,
       IO.OptionBuilder()
@@ -201,6 +216,7 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
           .build(),
     );
 
+    // ✅ FIX: Use clear, one-time registration of event handlers
     _socket!.onConnect((_) {
       print('[PatientVideo] Socket connected - ID: ${_socket!.id}');
       // Join room after connection
@@ -413,6 +429,16 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
   /// Initiate call (create offer)
   Future<void> _call(String targetUserId) async {
     try {
+      // ✅ GUARD: Don't create duplicate peer connections
+      if (_peerConnection != null) {
+        final state = await _peerConnection!.getConnectionState();
+        if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected ||
+            state == RTCPeerConnectionState.RTCPeerConnectionStateConnecting) {
+          print('[PatientVideo] Peer connection already exists in state: $state, skipping call');
+          return;
+        }
+      }
+
       print('[PatientVideo] Creating offer for: $targetUserId');
       _peerConnection = await _createPeerConnection();
 
@@ -432,6 +458,20 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
   /// Handle incoming offer
   Future<void> _handleOffer(dynamic data) async {
     try {
+      // ✅ GUARD: Don't process duplicate offers if already connected/connecting
+      if (_peerConnection != null) {
+        final state = await _peerConnection!.getConnectionState();
+        if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected ||
+            state == RTCPeerConnectionState.RTCPeerConnectionStateConnecting) {
+          print('[PatientVideo] Already connected/connecting, ignoring duplicate offer');
+          return;
+        }
+        // Clean up old failed connection before creating new one
+        print('[PatientVideo] Cleaning up old peer connection before handling offer');
+        await _peerConnection!.close();
+        await _peerConnection!.dispose();
+      }
+
       final callerId = data['caller'].toString();
       _remotePeerId = callerId;
 
@@ -647,6 +687,8 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
     _localStream?.dispose();
     _peerConnection?.close();
     _peerConnection?.dispose();
+    // ✅ Clean up ALL socket listeners before disposing
+    _socket?.clearListeners();
     _socket?.disconnect();
     _socket?.dispose();
     _localRenderer.dispose();

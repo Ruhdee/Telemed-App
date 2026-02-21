@@ -12,11 +12,15 @@ class ApiClient {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   ApiClient() {
+    // Log the base URL being used
+    AppLogger.info('API', '🌐 Initializing API client with baseUrl: ${ApiConstants.baseUrl}');
+    
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiConstants.baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 15),
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 30),
         headers: {'Content-Type': 'application/json'},
       ),
     );

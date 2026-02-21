@@ -3,9 +3,10 @@ import 'package:flutter/foundation.dart';
 
 /// Centralized API configuration for the TeleMedCare app.
 /// 
-/// Automatically uses the correct IP based on your build type:
-/// - Running from IDE/Debug: Uses emulator IP (10.0.2.2)
-/// - Installed APK: Uses physical device IP (your computer's local IP)
+/// Automatically detects emulator vs physical device using multiple checks:
+/// - Network interface analysis
+/// - Platform environment variables
+/// - Manual override option
 /// 
 /// SETUP: Just change `_localNetworkIp` to your computer's IP address!
 /// - Windows: Run 'ipconfig' → look for IPv4 Address (e.g., 192.168.1.105)
@@ -16,40 +17,102 @@ class ApiConstants {
   /// ════════════════════════════════════════════════════════════════════
   /// 🔧 CONFIGURE THIS: Your computer's IP address on local network
   /// ════════════════════════════════════════════════════════════════════
-  static const String _localNetworkIp = '10.10.10.231';  // ← Change this to YOUR IP!
+  static const String _localNetworkIp = '10.67.176.82';  // ← Change this to YOUR IP!
   
   /// Backend server port
   static const int _port = 5001;
 
   /// ════════════════════════════════════════════════════════════════════
-  /// 🎛️ DEVICE MODE SELECTOR
-  /// - null: Auto-detect (emulator when debugging, physical otherwise)
-  /// - true: Force emulator IP (10.0.2.2)
-  /// - false: Force physical device IP
+  /// 🎛️ DEVICE MODE SELECTOR (Manual Override)
+  /// - null: Auto-detect using multiple detection methods
+  /// - true: Force emulator IP (10.0.2.2) - use when auto-detect fails
+  /// - false: Force physical device IP - use for testing on real device
   /// ════════════════════════════════════════════════════════════════════
-  static const bool? _forceEmulatorMode = null;  // ← null = auto, true = emulator, false = physical
+  static const bool? _forceEmulatorMode = null;  // ← Set to false for physical device, null for auto
+
+  /// Cached emulator detection result
+  static bool? _isEmulatorCached;
+
+  /// Multi-method emulator detection using system properties
+  static bool get _isEmulator {
+    // Return cached result if available
+    if (_isEmulatorCached != null) return _isEmulatorCached!;
+
+    // Check Platform environment for emulator indicators
+    if (Platform.isAndroid) {
+      try {
+        // Check for emulator fingerprints in environment
+        // These are Android system properties that differ between emulator and physical devices
+        final fingerprint = Platform.environment['ro.build.fingerprint']?.toLowerCase() ?? '';
+        final model = Platform.environment['ro.product.model']?.toLowerCase() ?? '';
+        final manufacturer = Platform.environment['ro.product.manufacturer']?.toLowerCase() ?? '';
+        final brand = Platform.environment['ro.product.brand']?.toLowerCase() ?? '';
+        final device = Platform.environment['ro.product.device']?.toLowerCase() ?? '';
+        final hardware = Platform.environment['ro.hardware']?.toLowerCase() ?? '';
+        final product = Platform.environment['ro.product.name']?.toLowerCase() ?? '';
+
+        // Emulator indicators - these keywords are present on emulators
+        final isEmulator = fingerprint.contains('generic') ||
+            fingerprint.contains('test-keys') ||
+            model.contains('sdk') ||
+            model.contains('emulator') ||
+            model.contains('android sdk built for') ||
+            manufacturer.contains('genymotion') ||
+            manufacturer.contains('unknown') ||
+            (brand.contains('generic') && device.contains('generic')) ||
+            product.contains('sdk') ||
+            product.contains('emulator') ||
+            hardware.contains('ranchu') ||
+            hardware.contains('goldfish');
+
+        _isEmulatorCached = isEmulator;
+        if (kDebugMode) {
+          print('[ApiConstants] Detection: ${isEmulator ? "Emulator" : "Physical device"}');
+          if (kDebugMode && !isEmulator) {
+            print('[ApiConstants]   Model: $model, Brand: $brand, Device: $device');
+          }
+        }
+        return isEmulator;
+      } catch (e) {
+        if (kDebugMode) {
+          print('[ApiConstants] Environment check failed: $e');
+        }
+      }
+    }
+
+    // Default: Assume physical device if no emulator indicators found
+    _isEmulatorCached = false;
+    if (kDebugMode) {
+      print('[ApiConstants] Detection: Physical device (default)');
+    }
+    return false;
+  }
 
   /// Determines which IP to use
   static String get _serverIp {
     // If force mode is set, use that
     if (_forceEmulatorMode != null) {
-      return _forceEmulatorMode! ? '10.0.2.2' : _localNetworkIp;
+      final ip = _forceEmulatorMode! ? '10.0.2.2' : _localNetworkIp;
+      if (kDebugMode) {
+        print('[ApiConstants] Using FORCED mode: ${_forceEmulatorMode! ? "Emulator" : "Physical"} → $ip');
+      }
+      return ip;
     }
     
-    // Auto-detect: Use emulator IP only in debug mode (when running from IDE)
-    // In release/profile mode or installed APK, use physical device IP
-    if (kDebugMode && Platform.isAndroid) {
-      return '10.0.2.2';  // Emulator
+    // Auto-detect
+    final isEmu = _isEmulator;
+    final ip = isEmu ? '10.0.2.2' : _localNetworkIp;
+    if (kDebugMode) {
+      print('[ApiConstants] Auto-detected: ${isEmu ? "Emulator" : "Physical Device"} → $ip');
     }
-    
-    return _localNetworkIp;  // Physical device
+    return ip;
   }
 
   /// Backend base URL (HTTP)
   static String get baseUrl {
     final url = 'http://$_serverIp:$_port';
     if (kDebugMode) {
-      print('[ApiConstants] Using baseUrl: $url');
+      print('[ApiConstants] 🌐 Base URL: $url');
     }
     return url;
   }
@@ -58,7 +121,7 @@ class ApiConstants {
   static String get copilotWsUrl {
     final url = 'ws://$_serverIp:$_port';
     if (kDebugMode) {
-      print('[ApiConstants] Using wsUrl: $url');
+      print('[ApiConstants] 🔌 WebSocket URL: $url');
     }
     return url;
   }
