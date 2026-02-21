@@ -21,7 +21,6 @@ import '../../features/offline_consultation/presentation/offline_consultation_li
 import '../../features/offline_consultation/presentation/offline_consultation_review_screen.dart';
 import '../../features/online_consultation/presentation/patient_video_call_screen.dart';
 import '../../features/online_consultation/presentation/doctor_video_call_screen.dart';
-import '../../features/online_consultation/presentation/tele_consultation_screen.dart';
 import '../../features/demographics/presentation/demographics_screen.dart';
 import '../../features/feedback/presentation/feedback_screen.dart';
 import '../../features/services/presentation/services_screen.dart';

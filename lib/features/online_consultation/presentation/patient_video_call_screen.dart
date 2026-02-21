@@ -26,7 +26,8 @@ class PatientVideoCallScreen extends StatefulWidget {
   State<PatientVideoCallScreen> createState() => _PatientVideoCallScreenState();
 }
 
-class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
+class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
+    with WidgetsBindingObserver {
   // WebRTC Components
   final RTCVideoRenderer _localRenderer = RTCVideoRenderer();
   final RTCVideoRenderer _remoteRenderer = RTCVideoRenderer();
@@ -41,8 +42,15 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
   bool _isMicMuted = false;
   bool _isCameraOff = false;
   bool _isRemoteConnected = false;
+  bool _hasEverConnected = false; // Track if connection was ever established
   String _statusText = 'Initializing...';
   String? _remotePeerId;
+  Timer? _reconnectionTimer;
+  bool _isReconnecting = false;
+  int _reconnectionAttempts = 0;
+  static const int _maxReconnectionAttempts = 12; // Increased for better reconnection
+  static const Duration _reconnectionDelay = Duration(seconds: 20); // Increased for stability
+  static const Duration _iceCheckDelay = Duration(seconds: 15); // Increased for network recovery
 
   // ICE Configuration
   final Map<String, dynamic> _iceServers = {
@@ -52,9 +60,15 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
     ],
   };
 
-  // Media constraints
+  // Media constraints optimized for Android emulator
   final Map<String, dynamic> _mediaConstraints = {
-    'audio': true,
+    'audio': {
+      'echoCancellation': true,
+      'noiseSuppression': true,
+      'autoGainControl': true,
+      'sampleRate': 48000,
+      'channelCount': 1, // Mono to reduce emulator load
+    },
     'video': {
       'facingMode': 'user',
       'width': {'ideal': 1280},
@@ -71,11 +85,52 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     print('[PatientVideo] Initializing for room: ${widget.roomId}');
     // Defer initialization to after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initialize();
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print('[PatientVideo] App lifecycle state: $state');
+    
+    if (state == AppLifecycleState.paused) {
+      // App moved to background
+      print('[PatientVideo] App paused - maintaining connection');
+    } else if (state == AppLifecycleState.resumed) {
+      // App resumed
+      print('[PatientVideo] App resumed - checking connection');
+      _checkConnectionHealth();
+    } else if (state == AppLifecycleState.inactive) {
+      // App transitioning (e.g., during phone call)
+      print('[PatientVideo] App inactive');
+    }
+  }
+
+  /// Check connection health and attempt reconnection if needed
+  Future<void> _checkConnectionHealth() async {
+    if (_peerConnection == null) return;
+
+    try {
+      final connectionState = await _peerConnection!.getConnectionState();
+      final iceState = await _peerConnection!.getIceConnectionState();
+      
+      print('[PatientVideo] Health check - Connection: $connectionState, ICE: $iceState');
+      
+      if (connectionState == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
+          connectionState == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
+          iceState == RTCIceConnectionState.RTCIceConnectionStateFailed ||
+          iceState == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
+        print('[PatientVideo] Connection unhealthy - attempting recovery');
+        await _attemptReconnection();
+      }
+    } catch (e) {
+      print('[PatientVideo] Error checking connection health: $e');
+    }
   }
 
   /// Main initialization sequence
@@ -167,10 +222,12 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
 
     _socket!.onDisconnect((_) {
       print('[PatientVideo] Socket disconnected');
-      setState(() {
-        _statusText = 'Disconnected from server';
-        _isRemoteConnected = false;
-      });
+      if (mounted) {
+        setState(() {
+          _statusText = 'Disconnected from server';
+          _isRemoteConnected = false;
+        });
+      }
     });
 
     _socket!.onConnectError((error) {
@@ -188,12 +245,23 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
 
     // Add local stream to peer connection
     if (_localStream != null) {
-      _localStream!.getTracks().forEach((track) {
-        pc.addTrack(track, _localStream!);
-      });
-      print(
-        '[PatientVideo] Added ${_localStream!.getTracks().length} local tracks',
-      );
+      final tracks = _localStream!.getTracks();
+      if (tracks.isNotEmpty) {
+        for (final track in tracks) {
+          if (track != null) {
+            try {
+              await pc.addTrack(track, _localStream!);
+            } catch (e) {
+              print('[PatientVideo] Error adding track: $e');
+            }
+          }
+        }
+        print('[PatientVideo] Added ${tracks.length} local tracks');
+      } else {
+        print('[PatientVideo] WARNING: No tracks in local stream');
+      }
+    } else {
+      print('[PatientVideo] WARNING: Local stream is null');
     }
 
     // Handle incoming remote stream
@@ -207,10 +275,12 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
           '[PatientVideo] Setting remote stream - Audio: ${remoteStream.getAudioTracks().length}, Video: ${remoteStream.getVideoTracks().length}',
         );
         _remoteRenderer.srcObject = remoteStream;
-        setState(() {
-          _isRemoteConnected = true;
-          _statusText = 'Connected to ${widget.doctorName ?? "doctor"}';
-        });
+        if (mounted) {
+          setState(() {
+            _isRemoteConnected = true;
+            _statusText = 'Connected to ${widget.doctorName ?? "doctor"}';
+          });
+        }
       }
     };
 
@@ -232,12 +302,45 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
     // Handle connection state changes
     pc.onConnectionState = (state) {
       print('[PatientVideo] Connection state: $state');
+      if (!mounted) return;
+      
       if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
-        setState(() => _statusText = 'Connected');
-      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
-          state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
         setState(() {
-          _statusText = 'Connection lost';
+          _statusText = 'Connected';
+          _isReconnecting = false;
+          _reconnectionAttempts = 0;
+          _hasEverConnected = true; // Mark that we've connected successfully
+        });
+        _cancelReconnectionTimer();
+      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
+        print('[PatientVideo] Connection failed');
+        if (_hasEverConnected) {
+          print('[PatientVideo] Was previously connected - will attempt reconnection');
+          setState(() {
+            _statusText = 'Connection failed';
+            _isRemoteConnected = false;
+          });
+          _scheduleReconnection();
+        } else {
+          print('[PatientVideo] Initial connection failed - waiting for peer');
+          setState(() => _statusText = 'Connection failed. Waiting...');
+        }
+      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+        print('[PatientVideo] Connection disconnected');
+        if (_hasEverConnected) {
+          print('[PatientVideo] Was previously connected - monitoring for recovery');
+          setState(() {
+            _statusText = 'Connection interrupted...';
+            _isRemoteConnected = false;
+          });
+          _scheduleReconnection();
+        } else {
+          print('[PatientVideo] Still negotiating initial connection');
+        }
+      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateClosed) {
+        print('[PatientVideo] Connection closed');
+        setState(() {
+          _statusText = 'Call ended';
           _isRemoteConnected = false;
         });
       }
@@ -246,6 +349,39 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
     // Handle ICE connection state
     pc.onIceConnectionState = (state) {
       print('[PatientVideo] ICE connection state: $state');
+      if (!mounted) return;
+      
+      if (state == RTCIceConnectionState.RTCIceConnectionStateConnected ||
+          state == RTCIceConnectionState.RTCIceConnectionStateCompleted) {
+        print('[PatientVideo] ICE connection established');
+        setState(() => _hasEverConnected = true);
+        _cancelReconnectionTimer();
+      } else if (state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
+        if (_hasEverConnected) {
+          print('[PatientVideo] ICE connection failed - attempting ICE restart');
+          _handleIceConnectionFailure();
+        } else {
+          print('[PatientVideo] ICE failed during initial setup - may need manual intervention');
+          if (mounted) {
+            setState(() => _statusText = 'Connection setup failed');
+          }
+        }
+      } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
+        if (_hasEverConnected) {
+          print('[PatientVideo] ICE disconnected - will monitor for reconnection');
+          // Give it some time to reconnect automatically
+          Future.delayed(_iceCheckDelay, () {
+            if (mounted) _checkConnectionHealth();
+          });
+        } else {
+          print('[PatientVideo] ICE disconnected - still in initial negotiation phase');
+        }
+      }
+    };
+
+    // Handle ICE gathering state
+    pc.onIceGatheringState = (state) {
+      print('[PatientVideo] ICE gathering state: $state');
     };
 
     return pc;
@@ -347,6 +483,102 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
     }
   }
 
+  /// Handle ICE connection failure with restart
+  Future<void> _handleIceConnectionFailure() async {
+    if (_peerConnection == null || _isReconnecting) return;
+    
+    try {
+      print('[PatientVideo] Attempting ICE restart');
+      setState(() => _isReconnecting = true);
+      
+      // Trigger ICE restart
+      await _peerConnection!.restartIce();
+      
+      // Create new offer with ICE restart
+      if (_remotePeerId != null) {
+        final offer = await _peerConnection!.createOffer(_sdpConstraints);
+        await _peerConnection!.setLocalDescription(offer);
+        
+        _socket!.emit('offer', {
+          'target': _remotePeerId,
+          'sdp': {'type': offer.type, 'sdp': offer.sdp},
+        });
+        print('[PatientVideo] ICE restart offer sent');
+      }
+    } catch (e) {
+      print('[PatientVideo] Error during ICE restart: $e');
+      setState(() => _isReconnecting = false);
+    }
+  }
+
+  /// Schedule reconnection attempt
+  void _scheduleReconnection() {
+    if (_reconnectionTimer != null && _reconnectionTimer!.isActive) {
+      return; // Already scheduled
+    }
+    
+    _reconnectionTimer = Timer(_reconnectionDelay, () {
+      if (mounted) _attemptReconnection();
+    });
+  }
+
+  /// Cancel reconnection timer
+  void _cancelReconnectionTimer() {
+    _reconnectionTimer?.cancel();
+    _reconnectionTimer = null;
+  }
+
+  /// Attempt to reconnect
+  Future<void> _attemptReconnection() async {
+    if (_isReconnecting || _reconnectionAttempts >= _maxReconnectionAttempts) {
+      print('[PatientVideo] Max reconnection attempts ($_maxReconnectionAttempts) reached');
+      if (mounted) {
+        setState(() {
+          _statusText = 'Connection lost. Please rejoin.';
+        });
+      }
+      return;
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      _isReconnecting = true;
+      _reconnectionAttempts++;
+      _statusText = 'Reconnecting... (${_reconnectionAttempts}/$_maxReconnectionAttempts)';
+    });
+
+    print('[PatientVideo] Reconnection attempt ${_reconnectionAttempts}');
+
+    try {
+      // Check socket connection first
+      if (_socket == null || !_socket!.connected) {
+        print('[PatientVideo] Socket disconnected, reconnecting socket');
+        _socket?.connect();
+        await Future.delayed(const Duration(seconds: 5));
+      }
+
+      // Attempt ICE restart if peer connection exists
+      if (_peerConnection != null && _remotePeerId != null) {
+        await _handleIceConnectionFailure();
+      }
+
+      // Schedule next attempt if still not connected
+      Future.delayed(_reconnectionDelay, () {
+        if (!_isRemoteConnected && mounted) {
+          _attemptReconnection();
+        }
+      });
+    } catch (e) {
+      print('[PatientVideo] Reconnection error: $e');
+      if (mounted) {
+        setState(() {
+          _isReconnecting = false;
+        });
+      }
+    }
+  }
+
   /// End call and cleanup
   Future<void> _endCall() async {
     print('[PatientVideo] Ending call');
@@ -383,6 +615,8 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen> {
   @override
   void dispose() {
     print('[PatientVideo] Disposing');
+    WidgetsBinding.instance.removeObserver(this);
+    _cancelReconnectionTimer();
     _localStream?.getTracks().forEach((track) => track.stop());
     _localStream?.dispose();
     _peerConnection?.close();
