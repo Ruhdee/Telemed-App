@@ -1,4 +1,3 @@
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/domain/user_model.dart';
@@ -20,8 +19,9 @@ import '../../features/nurse/presentation/nurse_dashboard_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_list_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_review_screen.dart';
+import '../../features/online_consultation/presentation/patient_video_call_screen.dart';
+import '../../features/online_consultation/presentation/doctor_video_call_screen.dart';
 import '../../features/online_consultation/presentation/tele_consultation_screen.dart';
-import '../../features/online_consultation/presentation/doctor_online_consultation_screen.dart';
 import '../../features/demographics/presentation/demographics_screen.dart';
 import '../../features/feedback/presentation/feedback_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
@@ -55,7 +55,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isLoading = authState.isLoading;
       final user = authState.valueOrNull;
       final isLoggedIn = user != null;
-      final isOnAuth = state.uri.path == '/login' || state.uri.path == '/register';
+      final isOnAuth =
+          state.uri.path == '/login' || state.uri.path == '/register';
       final isOnLanding = state.uri.path == '/';
 
       // Still loading auth state — don't redirect
@@ -70,7 +71,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       // Logged in and on login/register → redirect to role-based dashboard
       if (isLoggedIn && (isOnAuth || isOnLanding)) {
         final destination = _roleBasedRoute(user.role);
-        AppLogger.nav('Redirecting to $destination (authenticated as ${user.role.name})');
+        AppLogger.nav(
+          'Redirecting to $destination (authenticated as ${user.role.name})',
+        );
         return destination;
       }
 
@@ -128,7 +131,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                       modelId: state.pathParameters['id']!,
                     ),
                   ),
-                ]
+                ],
               ),
               GoRoute(
                 path: 'records',
@@ -153,9 +156,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'consultation',
                 name: 'consultation',
-                builder: (context, state) => TeleConsultationScreen(
-                  roomId: state.extra is String ? state.extra as String : null,
-                ),
+                builder: (context, state) {
+                  // Extract room ID from extra parameter
+                  final roomId = state.extra is String
+                      ? state.extra as String
+                      : 'consultation-room-1';
+                  return PatientVideoCallScreen(
+                    roomId: roomId,
+                    doctorName: state.uri.queryParameters['doctorName'],
+                  );
+                },
               ),
               GoRoute(
                 path: 'offline-consultation',
@@ -165,7 +175,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'consultation-history',
                 name: 'consultation-history',
-                builder: (context, state) => const OfflineConsultationListScreen(),
+                builder: (context, state) =>
+                    const OfflineConsultationListScreen(),
               ),
               GoRoute(
                 path: 'demographics',
@@ -196,17 +207,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'consultation-review',
             name: 'doctor-consultation-review',
-            builder: (context, state) => const OfflineConsultationReviewScreen(),
+            builder: (context, state) =>
+                const OfflineConsultationReviewScreen(),
           ),
           GoRoute(
             path: 'online-consultation',
             name: 'doctor-online-consultation',
-            builder: (context, state) => DoctorOnlineConsultationScreen(
-              roomId: state.extra is Map ? (state.extra as Map)['roomId'] as String? : null,
-              patientName: state.extra is Map ? (state.extra as Map)['patientName'] as String? : null,
-            ),
+            builder: (context, state) {
+              // Extract parameters from extra map
+              final extra = state.extra;
+              final roomId = extra is Map
+                  ? (extra['roomId'] as String? ?? 'consultation-room-1')
+                  : 'consultation-room-1';
+              final patientName = extra is Map
+                  ? extra['patientName'] as String?
+                  : null;
+              return DoctorVideoCallScreen(
+                roomId: roomId,
+                patientName: patientName,
+              );
+            },
           ),
-        ]
+        ],
       ),
 
       // Nurse Dashboard
