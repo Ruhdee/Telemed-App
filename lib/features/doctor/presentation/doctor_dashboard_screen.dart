@@ -77,6 +77,7 @@ class DoctorDashboardScreen extends ConsumerWidget {
               spacing: 12,
               runSpacing: 12,
               children: [
+                _ActionChip(icon: LucideIcons.calendar, label: 'Manage Availability', onTap: () => context.push('/doctor/availability')),
                 _ActionChip(icon: LucideIcons.stethoscope, label: 'AI Copilot', onTap: () {}),
                 _ActionChip(icon: LucideIcons.fileText, label: 'SOAP Notes', onTap: () {}),
                 _ActionChip(icon: LucideIcons.videoOff, label: 'Review Offline', onTap: () => context.push('/doctor/consultation-review')),
@@ -111,40 +112,90 @@ class DoctorDashboardScreen extends ConsumerWidget {
                 final appt = entry.value;
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: GlassPanel(
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          backgroundColor: AppColors.goldLight,
-                          child: Text(appt.patientName[0], style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.goldDark)),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(appt.patientName, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                              Text(appt.chiefComplaint, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-                            ],
+                  child: GestureDetector(
+                    onTap: () => _showAppointmentActions(context, appt),
+                    child: GlassPanel(
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: AppColors.goldLight,
+                            child: Text(appt.patientName[0], style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.goldDark)),
                           ),
-                        ),
-                        if (appt.riskLevel != null)
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: _riskColor(appt.riskLevel!).withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              appt.riskLevel!.toUpperCase(),
-                              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _riskColor(appt.riskLevel!)),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(appt.patientName, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                                Text(appt.chiefComplaint, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                              ],
                             ),
                           ),
-                      ],
+                          if (appt.riskLevel != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: _riskColor(appt.riskLevel!).withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                appt.riskLevel!.toUpperCase(),
+                                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _riskColor(appt.riskLevel!)),
+                              ),
+                            ),
+                          const SizedBox(width: 8),
+                          Icon(LucideIcons.chevronRight, size: 16, color: AppColors.textMuted),
+                        ],
+                      ),
                     ),
                   ),
                 ).animate().fadeIn(delay: (entry.key * 60).ms);
               }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAppointmentActions(BuildContext context, Appointment appt) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              appt.patientName,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              appt.chiefComplaint,
+              style: const TextStyle(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 24),
+            ListTile(
+              leading: const Icon(LucideIcons.video, color: AppColors.goldPrimary),
+              title: const Text('Start Video Consultation'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/doctor/online-consultation', extra: {
+                  'roomId': appt.id,
+                  'patientName': appt.patientName,
+                });
+              },
+            ),
+            ListTile(
+              leading: const Icon(LucideIcons.fileText, color: AppColors.goldPrimary),
+              title: const Text('Review Offline Consultation'),
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/doctor/consultation-review');
+              },
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
