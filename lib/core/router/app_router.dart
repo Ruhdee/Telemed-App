@@ -15,12 +15,14 @@ import '../../features/pharmacy/presentation/pharmacy_screen.dart';
 import '../../features/pharmacy/presentation/pharmacy_cart_screen.dart';
 import '../../features/map/presentation/hospital_map_screen.dart';
 import '../../features/doctor/presentation/doctor_dashboard_screen.dart';
+import '../../features/doctor/presentation/availability_management_screen.dart';
 import '../../features/nurse/presentation/nurse_dashboard_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_list_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_review_screen.dart';
 import '../../features/online_consultation/presentation/patient_video_call_screen.dart';
 import '../../features/online_consultation/presentation/doctor_video_call_screen.dart';
+import '../../features/online_consultation/presentation/book_appointment_screen.dart';
 import '../../features/demographics/presentation/demographics_screen.dart';
 import '../../features/feedback/presentation/feedback_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
@@ -192,6 +194,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 name: 'services',
                 builder: (context, state) => const ServicesScreen(),
               ),
+              GoRoute(
+                path: 'book-appointment',
+                name: 'book-appointment',
+                builder: (context, state) => const BookAppointmentScreen(),
+              ),
             ],
           ),
         ],
@@ -203,6 +210,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'doctor-dashboard',
         builder: (context, state) => const DoctorDashboardScreen(),
         routes: [
+          GoRoute(
+            path: 'availability',
+            name: 'doctor-availability',
+            builder: (context, state) => const AvailabilityManagementScreen(),
+          ),
           GoRoute(
             path: 'consultation-review',
             name: 'doctor-consultation-review',

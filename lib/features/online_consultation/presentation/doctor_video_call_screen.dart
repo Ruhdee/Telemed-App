@@ -48,9 +48,14 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
   Timer? _reconnectionTimer;
   bool _isReconnecting = false;
   int _reconnectionAttempts = 0;
-  static const int _maxReconnectionAttempts = 12; // Increased for better reconnection
-  static const Duration _reconnectionDelay = Duration(seconds: 20); // Increased for stability
-  static const Duration _iceCheckDelay = Duration(seconds: 15); // Increased for network recovery
+  static const int _maxReconnectionAttempts =
+      12; // Increased for better reconnection
+  static const Duration _reconnectionDelay = Duration(
+    seconds: 20,
+  ); // Increased for stability
+  static const Duration _iceCheckDelay = Duration(
+    seconds: 15,
+  ); // Increased for network recovery
 
   // ICE Configuration
   final Map<String, dynamic> _iceServers = {
@@ -97,7 +102,7 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     print('[DoctorVideo] App lifecycle state: $state');
-    
+
     if (state == AppLifecycleState.paused) {
       // App moved to background
       print('[DoctorVideo] App paused - maintaining connection');
@@ -118,11 +123,15 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
     try {
       final connectionState = await _peerConnection!.getConnectionState();
       final iceState = await _peerConnection!.getIceConnectionState();
-      
-      print('[DoctorVideo] Health check - Connection: $connectionState, ICE: $iceState');
-      
-      if (connectionState == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
-          connectionState == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
+
+      print(
+        '[DoctorVideo] Health check - Connection: $connectionState, ICE: $iceState',
+      );
+
+      if (connectionState ==
+              RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
+          connectionState ==
+              RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
           iceState == RTCIceConnectionState.RTCIceConnectionStateFailed ||
           iceState == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
         print('[DoctorVideo] Connection unhealthy - attempting recovery');
@@ -303,7 +312,7 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
     pc.onConnectionState = (state) {
       print('[DoctorVideo] Connection state: $state');
       if (!mounted) return;
-      
+
       if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
         setState(() {
           _statusText = 'Connected';
@@ -315,7 +324,9 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
       } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
         print('[DoctorVideo] Connection failed');
         if (_hasEverConnected) {
-          print('[DoctorVideo] Was previously connected - will attempt reconnection');
+          print(
+            '[DoctorVideo] Was previously connected - will attempt reconnection',
+          );
           setState(() {
             _statusText = 'Connection failed';
             _isRemoteConnected = false;
@@ -325,10 +336,13 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
           print('[DoctorVideo] Initial connection failed - waiting for peer');
           setState(() => _statusText = 'Connection failed. Waiting...');
         }
-      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+      } else if (state ==
+          RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
         print('[DoctorVideo] Connection disconnected');
         if (_hasEverConnected) {
-          print('[DoctorVideo] Was previously connected - monitoring for recovery');
+          print(
+            '[DoctorVideo] Was previously connected - monitoring for recovery',
+          );
           setState(() {
             _statusText = 'Connection interrupted...';
             _isRemoteConnected = false;
@@ -350,7 +364,7 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
     pc.onIceConnectionState = (state) {
       print('[DoctorVideo] ICE connection state: $state');
       if (!mounted) return;
-      
+
       if (state == RTCIceConnectionState.RTCIceConnectionStateConnected ||
           state == RTCIceConnectionState.RTCIceConnectionStateCompleted) {
         print('[DoctorVideo] ICE connection established');
@@ -361,20 +375,27 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
           print('[DoctorVideo] ICE connection failed - attempting ICE restart');
           _handleIceConnectionFailure();
         } else {
-          print('[DoctorVideo] ICE failed during initial setup - may need manual intervention');
+          print(
+            '[DoctorVideo] ICE failed during initial setup - may need manual intervention',
+          );
           if (mounted) {
             setState(() => _statusText = 'Connection setup failed');
           }
         }
-      } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
+      } else if (state ==
+          RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
         if (_hasEverConnected) {
-          print('[DoctorVideo] ICE disconnected - will monitor for reconnection');
+          print(
+            '[DoctorVideo] ICE disconnected - will monitor for reconnection',
+          );
           // Give it some time to reconnect automatically
           Future.delayed(_iceCheckDelay, () {
             if (mounted) _checkConnectionHealth();
           });
         } else {
-          print('[DoctorVideo] ICE disconnected - still in initial negotiation phase');
+          print(
+            '[DoctorVideo] ICE disconnected - still in initial negotiation phase',
+          );
         }
       }
     };
@@ -486,19 +507,19 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
   /// Handle ICE connection failure with restart
   Future<void> _handleIceConnectionFailure() async {
     if (_peerConnection == null || _isReconnecting) return;
-    
+
     try {
       print('[DoctorVideo] Attempting ICE restart');
       setState(() => _isReconnecting = true);
-      
+
       // Trigger ICE restart
       await _peerConnection!.restartIce();
-      
+
       // Create new offer with ICE restart
       if (_remotePeerId != null) {
         final offer = await _peerConnection!.createOffer(_sdpConstraints);
         await _peerConnection!.setLocalDescription(offer);
-        
+
         _socket!.emit('offer', {
           'target': _remotePeerId,
           'sdp': {'type': offer.type, 'sdp': offer.sdp},
@@ -516,7 +537,7 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
     if (_reconnectionTimer != null && _reconnectionTimer!.isActive) {
       return; // Already scheduled
     }
-    
+
     _reconnectionTimer = Timer(_reconnectionDelay, () {
       if (mounted) _attemptReconnection();
     });
@@ -531,7 +552,9 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
   /// Attempt to reconnect
   Future<void> _attemptReconnection() async {
     if (_isReconnecting || _reconnectionAttempts >= _maxReconnectionAttempts) {
-      print('[DoctorVideo] Max reconnection attempts ($_maxReconnectionAttempts) reached');
+      print(
+        '[DoctorVideo] Max reconnection attempts ($_maxReconnectionAttempts) reached',
+      );
       if (mounted) {
         setState(() {
           _statusText = 'Connection lost. Please rejoin.';
@@ -545,7 +568,8 @@ class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen>
     setState(() {
       _isReconnecting = true;
       _reconnectionAttempts++;
-      _statusText = 'Reconnecting... (${_reconnectionAttempts}/$_maxReconnectionAttempts)';
+      _statusText =
+          'Reconnecting... (${_reconnectionAttempts}/$_maxReconnectionAttempts)';
     });
 
     print('[DoctorVideo] Reconnection attempt ${_reconnectionAttempts}');

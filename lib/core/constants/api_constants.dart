@@ -27,6 +27,18 @@ class ApiConstants {
   static const String appointmentsEndpoint = '/api/appointments';
   static const String doctorAppointmentsEndpoint = '/api/appointments/doctor';
   static const String patientAppointmentsEndpoint = '/api/appointments/patient';
+  
+  // Helper to get appointment payment confirmation endpoint
+  static String appointmentPaymentEndpoint(int appointmentId) => 
+      '/api/appointments/$appointmentId/confirm-payment';
+
+  // ── Doctor Availability & Slots ──────────────────────────────
+  static const String availabilityEndpoint = '/api/availability';
+  static const String myAvailabilityEndpoint = '/api/availability/me';
+  
+  // Helper to get slots for a specific doctor
+  static String doctorSlotsEndpoint(int doctorId) => 
+      '/api/doctors/$doctorId/slots';
 
   // ── Records / OCR ────────────────────────────────────────────
   static const String scanPrescriptionEndpoint = '/api/scan-prescription';

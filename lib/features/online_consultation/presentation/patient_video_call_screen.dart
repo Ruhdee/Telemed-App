@@ -48,9 +48,14 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
   Timer? _reconnectionTimer;
   bool _isReconnecting = false;
   int _reconnectionAttempts = 0;
-  static const int _maxReconnectionAttempts = 12; // Increased for better reconnection
-  static const Duration _reconnectionDelay = Duration(seconds: 20); // Increased for stability
-  static const Duration _iceCheckDelay = Duration(seconds: 15); // Increased for network recovery
+  static const int _maxReconnectionAttempts =
+      12; // Increased for better reconnection
+  static const Duration _reconnectionDelay = Duration(
+    seconds: 20,
+  ); // Increased for stability
+  static const Duration _iceCheckDelay = Duration(
+    seconds: 15,
+  ); // Increased for network recovery
 
   // ICE Configuration
   final Map<String, dynamic> _iceServers = {
@@ -97,7 +102,7 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     print('[PatientVideo] App lifecycle state: $state');
-    
+
     if (state == AppLifecycleState.paused) {
       // App moved to background
       print('[PatientVideo] App paused - maintaining connection');
@@ -118,11 +123,15 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
     try {
       final connectionState = await _peerConnection!.getConnectionState();
       final iceState = await _peerConnection!.getIceConnectionState();
-      
-      print('[PatientVideo] Health check - Connection: $connectionState, ICE: $iceState');
-      
-      if (connectionState == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
-          connectionState == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
+
+      print(
+        '[PatientVideo] Health check - Connection: $connectionState, ICE: $iceState',
+      );
+
+      if (connectionState ==
+              RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
+          connectionState ==
+              RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
           iceState == RTCIceConnectionState.RTCIceConnectionStateFailed ||
           iceState == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
         print('[PatientVideo] Connection unhealthy - attempting recovery');
@@ -303,7 +312,7 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
     pc.onConnectionState = (state) {
       print('[PatientVideo] Connection state: $state');
       if (!mounted) return;
-      
+
       if (state == RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
         setState(() {
           _statusText = 'Connected';
@@ -315,7 +324,9 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
       } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
         print('[PatientVideo] Connection failed');
         if (_hasEverConnected) {
-          print('[PatientVideo] Was previously connected - will attempt reconnection');
+          print(
+            '[PatientVideo] Was previously connected - will attempt reconnection',
+          );
           setState(() {
             _statusText = 'Connection failed';
             _isRemoteConnected = false;
@@ -325,10 +336,13 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
           print('[PatientVideo] Initial connection failed - waiting for peer');
           setState(() => _statusText = 'Connection failed. Waiting...');
         }
-      } else if (state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
+      } else if (state ==
+          RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
         print('[PatientVideo] Connection disconnected');
         if (_hasEverConnected) {
-          print('[PatientVideo] Was previously connected - monitoring for recovery');
+          print(
+            '[PatientVideo] Was previously connected - monitoring for recovery',
+          );
           setState(() {
             _statusText = 'Connection interrupted...';
             _isRemoteConnected = false;
@@ -350,7 +364,7 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
     pc.onIceConnectionState = (state) {
       print('[PatientVideo] ICE connection state: $state');
       if (!mounted) return;
-      
+
       if (state == RTCIceConnectionState.RTCIceConnectionStateConnected ||
           state == RTCIceConnectionState.RTCIceConnectionStateCompleted) {
         print('[PatientVideo] ICE connection established');
@@ -358,23 +372,32 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
         _cancelReconnectionTimer();
       } else if (state == RTCIceConnectionState.RTCIceConnectionStateFailed) {
         if (_hasEverConnected) {
-          print('[PatientVideo] ICE connection failed - attempting ICE restart');
+          print(
+            '[PatientVideo] ICE connection failed - attempting ICE restart',
+          );
           _handleIceConnectionFailure();
         } else {
-          print('[PatientVideo] ICE failed during initial setup - may need manual intervention');
+          print(
+            '[PatientVideo] ICE failed during initial setup - may need manual intervention',
+          );
           if (mounted) {
             setState(() => _statusText = 'Connection setup failed');
           }
         }
-      } else if (state == RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
+      } else if (state ==
+          RTCIceConnectionState.RTCIceConnectionStateDisconnected) {
         if (_hasEverConnected) {
-          print('[PatientVideo] ICE disconnected - will monitor for reconnection');
+          print(
+            '[PatientVideo] ICE disconnected - will monitor for reconnection',
+          );
           // Give it some time to reconnect automatically
           Future.delayed(_iceCheckDelay, () {
             if (mounted) _checkConnectionHealth();
           });
         } else {
-          print('[PatientVideo] ICE disconnected - still in initial negotiation phase');
+          print(
+            '[PatientVideo] ICE disconnected - still in initial negotiation phase',
+          );
         }
       }
     };
@@ -486,19 +509,19 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
   /// Handle ICE connection failure with restart
   Future<void> _handleIceConnectionFailure() async {
     if (_peerConnection == null || _isReconnecting) return;
-    
+
     try {
       print('[PatientVideo] Attempting ICE restart');
       setState(() => _isReconnecting = true);
-      
+
       // Trigger ICE restart
       await _peerConnection!.restartIce();
-      
+
       // Create new offer with ICE restart
       if (_remotePeerId != null) {
         final offer = await _peerConnection!.createOffer(_sdpConstraints);
         await _peerConnection!.setLocalDescription(offer);
-        
+
         _socket!.emit('offer', {
           'target': _remotePeerId,
           'sdp': {'type': offer.type, 'sdp': offer.sdp},
@@ -516,7 +539,7 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
     if (_reconnectionTimer != null && _reconnectionTimer!.isActive) {
       return; // Already scheduled
     }
-    
+
     _reconnectionTimer = Timer(_reconnectionDelay, () {
       if (mounted) _attemptReconnection();
     });
@@ -531,7 +554,9 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
   /// Attempt to reconnect
   Future<void> _attemptReconnection() async {
     if (_isReconnecting || _reconnectionAttempts >= _maxReconnectionAttempts) {
-      print('[PatientVideo] Max reconnection attempts ($_maxReconnectionAttempts) reached');
+      print(
+        '[PatientVideo] Max reconnection attempts ($_maxReconnectionAttempts) reached',
+      );
       if (mounted) {
         setState(() {
           _statusText = 'Connection lost. Please rejoin.';
@@ -545,7 +570,8 @@ class _PatientVideoCallScreenState extends State<PatientVideoCallScreen>
     setState(() {
       _isReconnecting = true;
       _reconnectionAttempts++;
-      _statusText = 'Reconnecting... (${_reconnectionAttempts}/$_maxReconnectionAttempts)';
+      _statusText =
+          'Reconnecting... (${_reconnectionAttempts}/$_maxReconnectionAttempts)';
     });
 
     print('[PatientVideo] Reconnection attempt ${_reconnectionAttempts}');

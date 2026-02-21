@@ -55,17 +55,33 @@ class AuthRepository {
     String email,
     String password, {
     UserRole role = UserRole.patient,
+    String? phone,
+    String? specialization,
+    int? experience,
+    String? shift,
+    String? registrationNumber,
+    String? hospitalName,
+    String? qualification,
   }) async {
     AppLogger.auth('Attempting registration: $name ($email, role: ${role.name})');
 
+    final requestData = {
+      'name': name,
+      'email': email,
+      'password': password,
+      'role': role.name,
+      if (phone != null && phone.isNotEmpty) 'phone': phone,
+      if (specialization != null && specialization.isNotEmpty) 'specialization': specialization,
+      if (experience != null) 'experience': experience,
+      if (shift != null && shift.isNotEmpty) 'shift': shift,
+      if (registrationNumber != null && registrationNumber.isNotEmpty) 'registrationNumber': registrationNumber,
+      if (hospitalName != null && hospitalName.isNotEmpty) 'hospitalName': hospitalName,
+      if (qualification != null && qualification.isNotEmpty) 'qualification': qualification,
+    };
+
     final response = await _apiClient.post(
       ApiConstants.registerEndpoint,
-      data: {
-        'name': name,
-        'email': email,
-        'password': password,
-        'role': role.name,
-      },
+      data: requestData,
     );
 
     // Backend returns flat JSON: { id, name, email, role, token, ... }

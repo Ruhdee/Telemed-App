@@ -64,10 +64,29 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     String email,
     String password, {
     UserRole role = UserRole.patient,
+    String? phone,
+    String? specialization,
+    int? experience,
+    String? shift,
+    String? registrationNumber,
+    String? hospitalName,
+    String? qualification,
   }) async {
     state = const AsyncValue.loading();
     try {
-      final user = await _repo.register(name, email, password, role: role);
+      final user = await _repo.register(
+        name,
+        email,
+        password,
+        role: role,
+        phone: phone,
+        specialization: specialization,
+        experience: experience,
+        shift: shift,
+        registrationNumber: registrationNumber,
+        hospitalName: hospitalName,
+        qualification: qualification,
+      );
       state = AsyncValue.data(user);
       AppLogger.state('Auth state → registered as ${user.name}');
     } catch (e, st) {
