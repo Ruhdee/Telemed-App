@@ -35,7 +35,8 @@ class DashboardShell extends ConsumerWidget {
             ),
             _DrawerItem(icon: LucideIcons.user, label: 'Demographics', onTap: () => _onItemTapped(1, context)),
             _DrawerItem(icon: LucideIcons.calendar, label: 'Services & Booking', onTap: () => _onItemTapped(2, context)),
-            _DrawerItem(icon: LucideIcons.video, label: 'Offline Consultation', onTap: () => context.go('/dashboard/consultation')),
+            _DrawerItem(icon: LucideIcons.video, label: 'Tele-Consultation', onTap: () => context.go('/dashboard/consultation')),
+            _DrawerItem(icon: LucideIcons.videoOff, label: 'Offline Consultation', onTap: () => context.go('/dashboard/offline-consultation')),
             _DrawerItem(icon: LucideIcons.history, label: 'Consultation History', onTap: () => context.go('/dashboard/consultation-history')),
             _DrawerItem(icon: LucideIcons.fileText, label: 'Health Records', onTap: () => context.go('/dashboard/records')),
             _DrawerItem(icon: LucideIcons.pill, label: 'Pharmacy', onTap: () => context.go('/dashboard/pharmacy')),
@@ -58,7 +59,7 @@ class DashboardShell extends ConsumerWidget {
           BottomNavigationBarItem(icon: Icon(LucideIcons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(LucideIcons.user), label: 'Profile'),
           BottomNavigationBarItem(icon: Icon(LucideIcons.calendar), label: 'Services'),
-          BottomNavigationBarItem(icon: Icon(LucideIcons.messageSquare), label: 'Consult'),
+          BottomNavigationBarItem(icon: Icon(LucideIcons.video), label: 'Consult'),
         ],
       ),
     );
@@ -67,7 +68,7 @@ class DashboardShell extends ConsumerWidget {
   int _calculateSelectedIndex(String location) {
     if (location.startsWith('/dashboard/demographics')) return 1;
     if (location.startsWith('/dashboard/services')) return 2;
-    if (location.startsWith('/dashboard/consultation') || location.startsWith('/dashboard/triage')) return 3;
+    if (location.startsWith('/dashboard/consultation') || location.startsWith('/dashboard/offline-consultation')) return 3;
     return 0; // Home is default
   }
 
@@ -83,7 +84,7 @@ class DashboardShell extends ConsumerWidget {
         context.go('/dashboard/services');
         break;
       case 3:
-        context.go('/dashboard/triage');
+        context.go('/dashboard/consultation');
         break;
     }
   }

@@ -71,7 +71,7 @@ class DoctorDashboardScreen extends ConsumerWidget {
             const SizedBox(height: 28),
 
             // Quick Actions
-            Text('Actions', style: Theme.of(context).textTheme.headlineMedium),
+            Text('Quick Actions', style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 12),
             Wrap(
               spacing: 12,
@@ -79,7 +79,8 @@ class DoctorDashboardScreen extends ConsumerWidget {
               children: [
                 _ActionChip(icon: LucideIcons.stethoscope, label: 'AI Copilot', onTap: () {}),
                 _ActionChip(icon: LucideIcons.fileText, label: 'SOAP Notes', onTap: () {}),
-                _ActionChip(icon: LucideIcons.video, label: 'Review Videos', onTap: () => context.push('/doctor/consultation-review')),
+                _ActionChip(icon: LucideIcons.videoOff, label: 'Review Offline', onTap: () => context.push('/doctor/consultation-review')),
+                _ActionChip(icon: LucideIcons.video, label: 'Join Video Call', onTap: () => context.push('/doctor/online-consultation')),
                 _ActionChip(icon: LucideIcons.pill, label: 'Prescribe', onTap: () {}),
               ],
             ).animate().fadeIn(delay: 200.ms),

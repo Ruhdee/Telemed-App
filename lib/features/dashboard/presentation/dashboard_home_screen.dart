@@ -92,7 +92,7 @@ class DashboardHomeScreen extends ConsumerWidget {
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                       children: [
-                        _QuickAction(icon: LucideIcons.calendar, label: 'Book\nConsult', color: const Color(0xFF3B82F6), onTap: () => context.go('/dashboard/triage')),
+                        _QuickAction(icon: LucideIcons.video, label: 'Video\nConsult', color: const Color(0xFF3B82F6), onTap: () => context.go('/dashboard/consultation')),
                         _QuickAction(icon: LucideIcons.brain, label: 'AI\nDiagnosis', color: const Color(0xFF8B5CF6), onTap: () => context.go('/dashboard/ai-diagnosis')),
                         _QuickAction(icon: LucideIcons.fileText, label: 'Health\nRecords', color: const Color(0xFF10B981), onTap: () => context.go('/dashboard/records')),
                         _QuickAction(icon: LucideIcons.pill, label: 'Pharmacy', color: const Color(0xFFF59E0B), onTap: () => context.go('/dashboard/pharmacy')),

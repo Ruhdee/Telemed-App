@@ -15,9 +15,6 @@ class ApiConstants {
   /// TomTom Maps API key
   static const String tomtomApiKey = 'AHFi7q46N4j8cgLhMASvdEWJIACzxVCl';
 
-  /// Gemini API key (synced with backend .env)
-  static const String geminiApiKey = 'AIzaSyAG7GggH036raqLZlXPno-W0dfzIK91QHg';
-
   // ── Auth Endpoints ───────────────────────────────────────────
   static const String loginEndpoint = '/api/login';
   static const String registerEndpoint = '/api/register';

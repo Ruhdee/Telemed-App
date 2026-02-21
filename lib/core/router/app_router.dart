@@ -20,6 +20,8 @@ import '../../features/nurse/presentation/nurse_dashboard_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_list_screen.dart';
 import '../../features/offline_consultation/presentation/offline_consultation_review_screen.dart';
+import '../../features/online_consultation/presentation/tele_consultation_screen.dart';
+import '../../features/online_consultation/presentation/doctor_online_consultation_screen.dart';
 import '../../features/demographics/presentation/demographics_screen.dart';
 import '../../features/feedback/presentation/feedback_screen.dart';
 import '../../features/services/presentation/services_screen.dart';
@@ -151,6 +153,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: 'consultation',
                 name: 'consultation',
+                builder: (context, state) => TeleConsultationScreen(
+                  roomId: state.extra is String ? state.extra as String : null,
+                ),
+              ),
+              GoRoute(
+                path: 'offline-consultation',
+                name: 'offline-consultation',
                 builder: (context, state) => const OfflineConsultationScreen(),
               ),
               GoRoute(
@@ -188,6 +197,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             path: 'consultation-review',
             name: 'doctor-consultation-review',
             builder: (context, state) => const OfflineConsultationReviewScreen(),
+          ),
+          GoRoute(
+            path: 'online-consultation',
+            name: 'doctor-online-consultation',
+            builder: (context, state) => DoctorOnlineConsultationScreen(
+              roomId: state.extra is Map ? (state.extra as Map)['roomId'] as String? : null,
+              patientName: state.extra is Map ? (state.extra as Map)['patientName'] as String? : null,
+            ),
           ),
         ]
       ),
