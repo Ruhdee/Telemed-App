@@ -17,8 +17,9 @@ class ApiConstants {
   /// ════════════════════════════════════════════════════════════════════
   /// 🔧 CONFIGURE THIS: Your computer's IP address on local network
   /// ════════════════════════════════════════════════════════════════════
-  static const String _localNetworkIp = '10.67.176.82';  // ← Change this to YOUR IP!
-  
+  // static const String _localNetworkIp = '10.67.176.82';  // ← Change this to YOUR IP!
+  static const String _localNetworkIp = '10.64.187.166';  // ← Change this to YOUR IP!
+
   /// Backend server port
   static const int _port = 5001;
 

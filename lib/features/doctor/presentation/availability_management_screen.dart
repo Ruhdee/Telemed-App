@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'package:intl/intl.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../core/network/api_client.dart';
@@ -52,20 +53,7 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
         throw Exception('Not authenticated');
       }
 
-      // Parse user data to get doctor ID
-      final userJson = Map<String, dynamic>.from(
-        const <String, dynamic>{} as Map
-      )..addAll(Map<String, dynamic>.from(
-        // Simple JSON parsing
-        userData.split(',').fold<Map<String, dynamic>>({}, (map, pair) {
-          final parts = pair.split(':');
-          if (parts.length == 2) {
-            map[parts[0].trim().replaceAll('"', '')] = parts[1].trim().replaceAll('"', '');
-          }
-          return map;
-        })
-      ));
-      
+      final userJson = jsonDecode(userData) as Map<String, dynamic>;
       final doctorId = userJson['id'];
       if (doctorId == null) throw Exception('Doctor ID not found');
 
