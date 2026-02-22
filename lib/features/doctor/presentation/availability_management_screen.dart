@@ -14,19 +14,21 @@ class AvailabilityManagementScreen extends StatefulWidget {
   const AvailabilityManagementScreen({super.key});
 
   @override
-  State<AvailabilityManagementScreen> createState() => _AvailabilityManagementScreenState();
+  State<AvailabilityManagementScreen> createState() =>
+      _AvailabilityManagementScreenState();
 }
 
-class _AvailabilityManagementScreenState extends State<AvailabilityManagementScreen> {
+class _AvailabilityManagementScreenState
+    extends State<AvailabilityManagementScreen> {
   final _apiClient = ApiClient();
   final _storage = const FlutterSecureStorage();
-  
+
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _startTime = const TimeOfDay(hour: 9, minute: 0);
   TimeOfDay _endTime = const TimeOfDay(hour: 17, minute: 0);
   int _slotDuration = 30;
   int _maxCapacity = 1;
-  
+
   List<DoctorSlot> _slots = [];
   bool _isLoading = false;
   bool _isSaving = false;
@@ -48,7 +50,7 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
     try {
       final token = await _storage.read(key: 'auth_token');
       final userData = await _storage.read(key: 'user_data');
-      
+
       if (token == null || userData == null) {
         throw Exception('Not authenticated');
       }
@@ -82,7 +84,7 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
     // Validate times
     final startMinutes = _startTime.hour * 60 + _startTime.minute;
     final endMinutes = _endTime.hour * 60 + _endTime.minute;
-    
+
     if (startMinutes >= endMinutes) {
       setState(() {
         _errorMessage = 'Start time must be before end time';
@@ -98,8 +100,10 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
 
     try {
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
-      final startTimeStr = '${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}';
-      final endTimeStr = '${_endTime.hour.toString().padLeft(2, '0')}:${_endTime.minute.toString().padLeft(2, '0')}';
+      final startTimeStr =
+          '${_startTime.hour.toString().padLeft(2, '0')}:${_startTime.minute.toString().padLeft(2, '0')}';
+      final endTimeStr =
+          '${_endTime.hour.toString().padLeft(2, '0')}:${_endTime.minute.toString().padLeft(2, '0')}';
 
       final response = await _apiClient.post(
         ApiConstants.availabilityEndpoint,
@@ -117,7 +121,8 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
           _slots = (response.data['generatedSlots'] as List)
               .map((json) => DoctorSlot.fromJson(json))
               .toList();
-          _successMessage = 'Availability saved and slots generated successfully!';
+          _successMessage =
+              'Availability saved and slots generated successfully!';
           _isSaving = false;
         });
 
@@ -139,14 +144,14 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
   String _formatTime(String timeStr) {
     final parts = timeStr.split(':');
     if (parts.length < 2) return timeStr;
-    
+
     int hours = int.parse(parts[0]);
     final minutes = parts[1];
     final period = hours >= 12 ? 'PM' : 'AM';
-    
+
     hours = hours % 12;
     if (hours == 0) hours = 12;
-    
+
     return '$hours:$minutes $period';
   }
 
@@ -180,9 +185,14 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
                   // Date Selection
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.calendar_today, color: AppColors.goldPrimary),
+                    leading: const Icon(
+                      Icons.calendar_today,
+                      color: AppColors.goldPrimary,
+                    ),
                     title: const Text('Select Date'),
-                    subtitle: Text(DateFormat('EEEE, MMM d, yyyy').format(_selectedDate)),
+                    subtitle: Text(
+                      DateFormat('EEEE, MMM d, yyyy').format(_selectedDate),
+                    ),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                     onTap: () async {
                       final picked = await showDatePicker(
@@ -202,7 +212,10 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
                   // Start Time
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.access_time, color: AppColors.goldPrimary),
+                    leading: const Icon(
+                      Icons.access_time,
+                      color: AppColors.goldPrimary,
+                    ),
                     title: const Text('Start Time'),
                     subtitle: Text(_startTime.format(context)),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -221,7 +234,10 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
                   // End Time
                   ListTile(
                     contentPadding: EdgeInsets.zero,
-                    leading: const Icon(Icons.access_time_filled, color: AppColors.goldPrimary),
+                    leading: const Icon(
+                      Icons.access_time_filled,
+                      color: AppColors.goldPrimary,
+                    ),
                     title: const Text('End Time'),
                     subtitle: Text(_endTime.format(context)),
                     trailing: const Icon(Icons.arrow_forward_ios, size: 16),
@@ -240,7 +256,10 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
                   // Slot Duration
                   Row(
                     children: [
-                      const Icon(Icons.timer_outlined, color: AppColors.goldPrimary),
+                      const Icon(
+                        Icons.timer_outlined,
+                        color: AppColors.goldPrimary,
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -272,7 +291,10 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
                   // Max Capacity
                   Row(
                     children: [
-                      const Icon(Icons.people_outline, color: AppColors.goldPrimary),
+                      const Icon(
+                        Icons.people_outline,
+                        color: AppColors.goldPrimary,
+                      ),
                       const SizedBox(width: 16),
                       Expanded(
                         child: Column(
@@ -374,7 +396,10 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
                     Container(
                       padding: const EdgeInsets.all(32),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300, style: BorderStyle.solid),
+                        border: Border.all(
+                          color: Colors.grey.shade300,
+                          style: BorderStyle.solid,
+                        ),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Center(
@@ -389,13 +414,14 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
                       spacing: 12,
                       runSpacing: 12,
                       children: _slots.map((slot) {
-                        final isFull = slot.status == 'full' || 
-                                       slot.bookedCount >= slot.maxCapacity;
+                        final isFull =
+                            slot.status == 'full' ||
+                            slot.bookedCount >= slot.maxCapacity;
                         final isPartial = slot.bookedCount > 0 && !isFull;
-                        
+
                         Color backgroundColor;
                         Color textColor;
-                        
+
                         if (isFull) {
                           backgroundColor = Colors.red.shade50;
                           textColor = Colors.red.shade700;
@@ -438,7 +464,10 @@ class _AvailabilityManagementScreenState extends State<AvailabilityManagementScr
                               ),
                               const SizedBox(height: 8),
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.7),
                                   borderRadius: BorderRadius.circular(4),

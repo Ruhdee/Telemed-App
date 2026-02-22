@@ -8,7 +8,7 @@ import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/glass_panel.dart';
 
 /// Patient Appointment Booking Screen
-/// Matches the web frontend BookAppointmentModal.tsx functionality  
+/// Matches the web frontend BookAppointmentModal.tsx functionality
 class BookAppointmentScreen extends StatefulWidget {
   const BookAppointmentScreen({super.key});
 
@@ -27,13 +27,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   int? _selectedSlotId;
   String _appointmentType = 'Video Consult';
   List<DoctorSlot> _availableSlots = [];
-  
+
   bool _isLoadingDoctors = false;
   bool _isLoadingSlots = false;
   bool _isBooking = false;
   bool _isPaymentProcessing = false;
   int? _createdAppointmentId;
-  
+
   String? _errorMessage;
 
   @override
@@ -56,7 +56,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
     try {
       final response = await _apiClient.get(ApiConstants.doctorsEndpoint);
-      
+
       if (response.data is List) {
         setState(() {
           _doctors = (response.data as List)
@@ -119,7 +119,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
 
     try {
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
-      
+
       final response = await _apiClient.post(
         ApiConstants.appointmentsEndpoint,
         data: {
@@ -159,7 +159,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       await Future.delayed(const Duration(seconds: 2));
 
       final paymentId = 'GPAY-${DateTime.now().millisecondsSinceEpoch}';
-      
+
       final response = await _apiClient.post(
         ApiConstants.appointmentPaymentEndpoint(_createdAppointmentId!),
         data: {'paymentId': paymentId},
@@ -182,14 +182,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
   String _formatTime(String timeStr) {
     final parts = timeStr.split(':');
     if (parts.length < 2) return timeStr;
-    
+
     int hours = int.parse(parts[0]);
     final minutes = parts[1];
     final period = hours >= 12 ? 'PM' : 'AM';
-    
+
     hours = hours % 12;
     if (hours == 0) hours = 12;
-    
+
     return '$hours:$minutes $period';
   }
 
@@ -270,8 +270,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           height: 40,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isCompleted || isActive 
-                ? AppColors.goldPrimary 
+            color: isCompleted || isActive
+                ? AppColors.goldPrimary
                 : Colors.grey.shade300,
           ),
           child: Center(
@@ -330,9 +330,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 padding: const EdgeInsets.all(32),
                 child: Column(
                   children: [
-                    const CircularProgressIndicator(color: AppColors.goldPrimary),
+                    const CircularProgressIndicator(
+                      color: AppColors.goldPrimary,
+                    ),
                     const SizedBox(height: 12),
-                    Text(loc.translate('loadingDoctors'), style: const TextStyle(color: AppColors.textSecondary)),
+                    Text(
+                      loc.translate('loadingDoctors'),
+                      style: const TextStyle(color: AppColors.textSecondary),
+                    ),
                   ],
                 ),
               ),
@@ -340,9 +345,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           else if (_doctors.isEmpty)
             Padding(
               padding: const EdgeInsets.all(32),
-              child: Center(
-                child: Text(loc.translate('noDoctorsAvailable')),
-              ),
+              child: Center(child: Text(loc.translate('noDoctorsAvailable'))),
             )
           else
             ..._doctors.map((doctor) {
@@ -360,7 +363,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                     color: isSelected ? AppColors.goldLight : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: isSelected ? AppColors.goldPrimary : Colors.grey.shade300,
+                      color: isSelected
+                          ? AppColors.goldPrimary
+                          : Colors.grey.shade300,
                       width: 2,
                     ),
                   ),
@@ -417,7 +422,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           AppButton(
             label: loc.translate('next'),
             variant: AppButtonVariant.primary,
-            onPressed: _selectedDoctorId != null 
+            onPressed: _selectedDoctorId != null
                 ? () {
                     setState(() => _currentStep = 1);
                     _fetchSlots();
@@ -449,9 +454,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           // Date Selection
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.calendar_today, color: AppColors.goldPrimary),
+            leading: const Icon(
+              Icons.calendar_today,
+              color: AppColors.goldPrimary,
+            ),
             title: Text(loc.translate('selectDate')),
-            subtitle: Text(DateFormat('EEEE, MMM d, yyyy').format(_selectedDate)),
+            subtitle: Text(
+              DateFormat('EEEE, MMM d, yyyy').format(_selectedDate),
+            ),
             trailing: const Icon(Icons.arrow_forward_ios, size: 16),
             onTap: () async {
               final picked = await showDatePicker(
@@ -475,10 +485,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           const SizedBox(height: 16),
           Text(
             loc.translate('availableTimes'),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
 
@@ -488,9 +495,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 padding: const EdgeInsets.all(32),
                 child: Column(
                   children: [
-                    const CircularProgressIndicator(color: AppColors.goldPrimary),
+                    const CircularProgressIndicator(
+                      color: AppColors.goldPrimary,
+                    ),
                     const SizedBox(height: 12),
-                    Text(loc.translate('loadingSlots'), style: const TextStyle(color: AppColors.textSecondary)),
+                    Text(
+                      loc.translate('loadingSlots'),
+                      style: const TextStyle(color: AppColors.textSecondary),
+                    ),
                   ],
                 ),
               ),
@@ -502,16 +514,15 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                 border: Border.all(color: Colors.grey.shade300),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Center(
-                child: Text(loc.translate('noSlotsForDate')),
-              ),
+              child: Center(child: Text(loc.translate('noSlotsForDate'))),
             )
           else
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: _availableSlots.map((slot) {
-                final isFull = slot.status == 'full' ||
+                final isFull =
+                    slot.status == 'full' ||
                     slot.bookedCount >= slot.maxCapacity;
                 final isSelected = _selectedSlotId == slot.id;
                 return GestureDetector(
@@ -524,20 +535,24 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             color: isFull
                                 ? Colors.grey.shade200
                                 : isSelected
-                                    ? AppColors.goldPrimary
-                                    : Colors.white,
+                                ? AppColors.goldPrimary
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: isFull
                                   ? Colors.grey.shade300
                                   : isSelected
-                                      ? AppColors.goldPrimary
-                                      : AppColors.goldPrimary.withValues(alpha: 0.4),
+                                  ? AppColors.goldPrimary
+                                  : AppColors.goldPrimary.withValues(
+                                      alpha: 0.4,
+                                    ),
                               width: 2,
                             ),
                           ),
@@ -547,8 +562,8 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                               color: isFull
                                   ? Colors.grey.shade500
                                   : isSelected
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -557,7 +572,9 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                           Positioned.fill(
                             child: Container(
                               decoration: BoxDecoration(
-                                color: Colors.grey.shade200.withValues(alpha: 0.8),
+                                color: Colors.grey.shade200.withValues(
+                                  alpha: 0.8,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               alignment: Alignment.center,
@@ -596,10 +613,7 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           // Appointment Type
           Text(
             loc.translate('consultationType'),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
 
@@ -607,12 +621,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             children: [
               Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _appointmentType = 'Video Consult'),
+                  onTap: () =>
+                      setState(() => _appointmentType = 'Video Consult'),
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: _appointmentType == 'Video Consult' 
-                          ? AppColors.goldLight 
+                      color: _appointmentType == 'Video Consult'
+                          ? AppColors.goldLight
                           : Colors.white,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
@@ -633,12 +648,13 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: GestureDetector(
-                  onTap: () => setState(() => _appointmentType = 'Offline Review'),
+                  onTap: () =>
+                      setState(() => _appointmentType = 'Offline Review'),
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: _appointmentType == 'Offline Review' 
-                          ? AppColors.goldLight 
+                      color: _appointmentType == 'Offline Review'
+                          ? AppColors.goldLight
                           : Colors.white,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
@@ -678,13 +694,19 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
                   onPressed: () {
                     if (_selectedSlotId == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(loc.translate('pleaseSelectSlot')), backgroundColor: AppColors.error),
+                        SnackBar(
+                          content: Text(loc.translate('pleaseSelectSlot')),
+                          backgroundColor: AppColors.error,
+                        ),
                       );
                       return;
                     }
                     if (_symptomsController.text.trim().isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(loc.translate('pleaseFillSymptoms')), backgroundColor: AppColors.error),
+                        SnackBar(
+                          content: Text(loc.translate('pleaseFillSymptoms')),
+                          backgroundColor: AppColors.error,
+                        ),
                       );
                       return;
                     }
@@ -709,7 +731,14 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     );
     final selectedSlot = _availableSlots.firstWhere(
       (s) => s.id == _selectedSlotId,
-      orElse: () => DoctorSlot(id: 0, startTime: '--', endTime: '--', status: 'available', bookedCount: 0, maxCapacity: 1),
+      orElse: () => DoctorSlot(
+        id: 0,
+        startTime: '--',
+        endTime: '--',
+        status: 'available',
+        bookedCount: 0,
+        maxCapacity: 1,
+      ),
     );
 
     return GlassPanel(
@@ -728,7 +757,10 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
           const SizedBox(height: 8),
           Text(
             loc.translate('reviewDetailsSubtitle'),
-            style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 20),
 
@@ -740,15 +772,28 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             ),
             child: Column(
               children: [
-                _buildDetailRow(loc.translate('doctor'), '${loc.translate('dr')} ${selectedDoctor.name}'),
+                _buildDetailRow(
+                  loc.translate('doctor'),
+                  '${loc.translate('dr')} ${selectedDoctor.name}',
+                ),
                 const Divider(height: 24),
-                _buildDetailRow(loc.translate('date'), DateFormat('MMM d, yyyy').format(_selectedDate)),
+                _buildDetailRow(
+                  loc.translate('date'),
+                  DateFormat('MMM d, yyyy').format(_selectedDate),
+                ),
                 const Divider(height: 24),
-                _buildDetailRow(loc.translate('time'), _formatTime(selectedSlot.startTime)),
+                _buildDetailRow(
+                  loc.translate('time'),
+                  _formatTime(selectedSlot.startTime),
+                ),
                 const Divider(height: 24),
                 _buildDetailRow(loc.translate('type'), _appointmentType),
                 const Divider(height: 24),
-                _buildDetailRow(loc.translate('fee'), '₹200.00', isHighlighted: true),
+                _buildDetailRow(
+                  loc.translate('fee'),
+                  '₹200.00',
+                  isHighlighted: true,
+                ),
               ],
             ),
           ),
@@ -780,23 +825,26 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, {bool isHighlighted = false}) {
+  Widget _buildDetailRow(
+    String label,
+    String value, {
+    bool isHighlighted = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: AppColors.textSecondary,
-            fontSize: 14,
-          ),
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
         ),
         Text(
           value,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 14,
-            color: isHighlighted ? AppColors.goldPrimary : AppColors.textPrimary,
+            color: isHighlighted
+                ? AppColors.goldPrimary
+                : AppColors.textPrimary,
           ),
         ),
       ],
@@ -808,18 +856,11 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          const Icon(
-            Icons.credit_card,
-            size: 64,
-            color: AppColors.goldPrimary,
-          ),
+          const Icon(Icons.credit_card, size: 64, color: AppColors.goldPrimary),
           const SizedBox(height: 16),
           Text(
             loc.translate('scanAndPay'),
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
@@ -834,11 +875,19 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.blue.shade200, width: 2, style: BorderStyle.solid),
+              border: Border.all(
+                color: Colors.blue.shade200,
+                width: 2,
+                style: BorderStyle.solid,
+              ),
             ),
             child: Column(
               children: [
-                const Icon(Icons.qr_code, size: 200, color: AppColors.goldPrimary),
+                const Icon(
+                  Icons.qr_code,
+                  size: 200,
+                  color: AppColors.goldPrimary,
+                ),
                 const SizedBox(height: 8),
                 Text(
                   loc.translate('gpayQrCode'),
@@ -891,19 +940,12 @@ class _BookAppointmentScreenState extends State<BookAppointmentScreen> {
               shape: BoxShape.circle,
               color: Colors.green,
             ),
-            child: const Icon(
-              Icons.check,
-              size: 60,
-              color: Colors.white,
-            ),
+            child: const Icon(Icons.check, size: 60, color: Colors.white),
           ),
           const SizedBox(height: 24),
           Text(
             loc.translate('appointmentBookedTitle'),
-            style: const TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Text(
@@ -933,11 +975,7 @@ class Doctor {
   final String name;
   final String specialization;
 
-  Doctor({
-    required this.id,
-    required this.name,
-    required this.specialization,
-  });
+  Doctor({required this.id, required this.name, required this.specialization});
 
   factory Doctor.fromJson(Map<String, dynamic> json) {
     final rawId = json['id'];

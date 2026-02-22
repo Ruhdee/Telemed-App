@@ -34,7 +34,10 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
 
     if (_addressController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter delivery address'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('Please enter delivery address'),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
@@ -42,12 +45,16 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
     setState(() => _isCheckingOut = true);
     try {
       final apiClient = ref.read(apiClientProvider);
-      
-      final items = cart.map((item) => {
-        'id': item.medicine['id'],
-        'qty': item.quantity,
-        'price': item.medicine['price'],
-      }).toList();
+
+      final items = cart
+          .map(
+            (item) => {
+              'id': item.medicine['id'],
+              'qty': item.quantity,
+              'price': item.medicine['price'],
+            },
+          )
+          .toList();
 
       await apiClient.post(
         ApiConstants.pharmaCheckoutEndpoint,
@@ -59,10 +66,13 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
       );
 
       ref.read(cartProvider.notifier).clearCart();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Order placed successfully!'), backgroundColor: AppColors.success),
+          const SnackBar(
+            content: Text('Order placed successfully!'),
+            backgroundColor: AppColors.success,
+          ),
         );
         context.pop();
       }
@@ -70,7 +80,10 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
       AppLogger.error('Pharmacy Cart', 'Checkout failed', e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Checkout failed: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+            content: Text('Checkout failed: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     } finally {
@@ -90,9 +103,16 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(LucideIcons.shoppingCart, size: 64, color: AppColors.textMuted),
+                  Icon(
+                    LucideIcons.shoppingCart,
+                    size: 64,
+                    color: AppColors.textMuted,
+                  ),
                   const SizedBox(height: 16),
-                  const Text('Your cart is empty', style: TextStyle(fontSize: 18, color: AppColors.textMuted)),
+                  const Text(
+                    'Your cart is empty',
+                    style: TextStyle(fontSize: 18, color: AppColors.textMuted),
+                  ),
                   const SizedBox(height: 16),
                   AppButton(
                     label: 'Browse Medicines',
@@ -112,7 +132,7 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
                       final item = cart[index];
                       final med = item.medicine;
                       final price = (med['price'] as num?)?.toDouble() ?? 0.0;
-                      
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: GlassPanel(
@@ -122,18 +142,35 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
                                 width: 50,
                                 height: 50,
                                 decoration: BoxDecoration(
-                                  color: AppColors.goldLight.withValues(alpha: 0.3),
+                                  color: AppColors.goldLight.withValues(
+                                    alpha: 0.3,
+                                  ),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: const Icon(LucideIcons.pill, color: AppColors.goldDark),
+                                child: const Icon(
+                                  LucideIcons.pill,
+                                  color: AppColors.goldDark,
+                                ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(med['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                                    Text('\$${price.toStringAsFixed(2)}', style: const TextStyle(color: AppColors.goldDark, fontWeight: FontWeight.bold)),
+                                    Text(
+                                      med['name'] ?? '',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    Text(
+                                      '₹${price.toStringAsFixed(2)}',
+                                      style: const TextStyle(
+                                        color: AppColors.goldDark,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -141,15 +178,30 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
                                 children: [
                                   IconButton(
                                     icon: const Icon(LucideIcons.minusCircle),
-                                    onPressed: () => ref.read(cartProvider.notifier).updateQuantity(med['id'], item.quantity - 1),
+                                    onPressed: () => ref
+                                        .read(cartProvider.notifier)
+                                        .updateQuantity(
+                                          med['id'],
+                                          item.quantity - 1,
+                                        ),
                                   ),
-                                  Text('${item.quantity}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  Text(
+                                    '${item.quantity}',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                   IconButton(
                                     icon: const Icon(LucideIcons.plusCircle),
-                                    onPressed: () => ref.read(cartProvider.notifier).updateQuantity(med['id'], item.quantity + 1),
+                                    onPressed: () => ref
+                                        .read(cartProvider.notifier)
+                                        .updateQuantity(
+                                          med['id'],
+                                          item.quantity + 1,
+                                        ),
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -168,16 +220,33 @@ class _PharmacyCartScreenState extends ConsumerState<PharmacyCartScreen> {
                         decoration: InputDecoration(
                           hintText: 'Delivery Address',
                           prefixIcon: const Icon(LucideIcons.mapPin),
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                          contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 0,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text('\$${total.toStringAsFixed(2)}', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.goldDark)),
+                          const Text(
+                            'Total:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            '₹${total.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.goldDark,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 16),

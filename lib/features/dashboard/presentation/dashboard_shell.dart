@@ -35,42 +35,90 @@ class DashboardShell extends ConsumerWidget {
                 child: Icon(LucideIcons.user, color: AppColors.goldDark),
               ),
             ),
-            _DrawerItem(icon: LucideIcons.user, label: loc.translate('myProfile'), onTap: () {
-              context.go('/dashboard/profile');
-            }),
-            _DrawerItem(icon: LucideIcons.heartPulse, label: loc.translate('healthProfile'), onTap: () {
-              context.go('/dashboard/demographics');
-            }),
-            _DrawerItem(icon: LucideIcons.calendar, label: loc.translate('services'), onTap: () {
-              _onItemTapped(2, context);
-            }),
-            _DrawerItem(icon: LucideIcons.video, label: loc.translate('teleConsultation'), onTap: () {
-              context.go('/dashboard/consultation');
-            }),
-            _DrawerItem(icon: LucideIcons.videoOff, label: loc.translate('offlineConsultation'), onTap: () {
-              context.go('/dashboard/offline-consultation');
-            }),
-            _DrawerItem(icon: LucideIcons.history, label: loc.translate('consultationHistory'), onTap: () {
-              context.go('/dashboard/consultation-history');
-            }),
-            _DrawerItem(icon: LucideIcons.fileText, label: loc.translate('healthRecords'), onTap: () {
-              context.go('/dashboard/records');
-            }),
-            _DrawerItem(icon: LucideIcons.pill, label: loc.translate('pharmacy'), onTap: () {
-              context.go('/dashboard/pharmacy');
-            }),
-            _DrawerItem(icon: LucideIcons.mapPin, label: loc.translate('hospitalMap'), onTap: () {
-              context.go('/dashboard/map');
-            }),
-            _DrawerItem(icon: LucideIcons.brain, label: loc.translate('aiDiagnosis'), onTap: () {
-              context.go('/dashboard/ai-diagnosis');
-            }),
-            _DrawerItem(icon: LucideIcons.stethoscope, label: loc.translate('aiTriage'), onTap: () {
-              context.go('/dashboard/triage');
-            }),
-            _DrawerItem(icon: LucideIcons.star, label: loc.translate('feedback'), onTap: () {
-              context.go('/dashboard/feedback');
-            }),
+            _DrawerItem(
+              icon: LucideIcons.user,
+              label: loc.translate('myProfile'),
+              onTap: () {
+                context.go('/dashboard/profile');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.heartPulse,
+              label: loc.translate('healthProfile'),
+              onTap: () {
+                context.go('/dashboard/demographics');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.calendar,
+              label: loc.translate('services'),
+              onTap: () {
+                _onItemTapped(2, context);
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.video,
+              label: loc.translate('teleConsultation'),
+              onTap: () {
+                context.go('/dashboard/consultation');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.videoOff,
+              label: loc.translate('offlineConsultation'),
+              onTap: () {
+                context.go('/dashboard/offline-consultation');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.history,
+              label: loc.translate('consultationHistory'),
+              onTap: () {
+                context.go('/dashboard/consultation-history');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.fileText,
+              label: loc.translate('healthRecords'),
+              onTap: () {
+                context.go('/dashboard/records');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.pill,
+              label: loc.translate('pharmacy'),
+              onTap: () {
+                context.go('/dashboard/pharmacy');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.mapPin,
+              label: loc.translate('hospitalMap'),
+              onTap: () {
+                context.go('/dashboard/map');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.brain,
+              label: loc.translate('aiDiagnosis'),
+              onTap: () {
+                context.go('/dashboard/ai-diagnosis');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.stethoscope,
+              label: loc.translate('aiTriage'),
+              onTap: () {
+                context.go('/dashboard/triage');
+              },
+            ),
+            _DrawerItem(
+              icon: LucideIcons.star,
+              label: loc.translate('feedback'),
+              onTap: () {
+                context.go('/dashboard/feedback');
+              },
+            ),
           ],
         ),
       ),
@@ -83,10 +131,22 @@ class DashboardShell extends ConsumerWidget {
         showUnselectedLabels: true,
         type: BottomNavigationBarType.fixed,
         items: [
-          BottomNavigationBarItem(icon: const Icon(LucideIcons.home), label: loc.translate('home')),
-          BottomNavigationBarItem(icon: const Icon(LucideIcons.user), label: loc.translate('profile')),
-          BottomNavigationBarItem(icon: const Icon(LucideIcons.calendar), label: loc.translate('services')),
-          BottomNavigationBarItem(icon: const Icon(LucideIcons.video), label: loc.translate('consult')),
+          BottomNavigationBarItem(
+            icon: const Icon(LucideIcons.home),
+            label: loc.translate('home'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(LucideIcons.user),
+            label: loc.translate('profile'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(LucideIcons.calendar),
+            label: loc.translate('services'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(LucideIcons.video),
+            label: loc.translate('consult'),
+          ),
         ],
       ),
     );
@@ -95,8 +155,11 @@ class DashboardShell extends ConsumerWidget {
   int _calculateSelectedIndex(String location) {
     if (location.startsWith('/dashboard/profile')) return 1;
     if (location.startsWith('/dashboard/services') ||
-        location.startsWith('/dashboard/book-appointment')) return 2;
-    if (location.startsWith('/dashboard/consultation') || location.startsWith('/dashboard/offline-consultation')) return 3;
+        location.startsWith('/dashboard/book-appointment'))
+      return 2;
+    if (location.startsWith('/dashboard/consultation') ||
+        location.startsWith('/dashboard/offline-consultation'))
+      return 3;
     return 0; // Home is default
   }
 
@@ -123,7 +186,11 @@ class _DrawerItem extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _DrawerItem({required this.icon, required this.label, required this.onTap});
+  const _DrawerItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {

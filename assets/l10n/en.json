@@ -10,7 +10,6 @@
   "dontHaveAccount": "Don't have an account?",
   "signUp": "Sign Up",
   "forgotPassword": "Forgot Password?",
-  
   "createAccount": "Create Account",
   "registerPrompt": "Join us for premium healthcare",
   "name": "Name",
@@ -26,7 +25,6 @@
   "admin": "Admin",
   "alreadyHaveAccount": "Already have an account?",
   "next": "Next",
-  
   "doctorRegistration": "Doctor Registration",
   "professionalDetails": "Professional Details",
   "specialization": "Specialization",
@@ -40,7 +38,6 @@
   "qualification": "Qualification",
   "qualificationHint": "MBBS, MD, etc.",
   "shift": "Shift",
-  
   "dashboard": "Dashboard",
   "patientDashboard": "Patient Dashboard",
   "doctorDashboard": "Doctor Dashboard",
@@ -49,7 +46,6 @@
   "pharmacy": "Pharmacy",
   "records": "Records",
   "profile": "Profile",
-  
   "hello": "Hello",
   "good": "Good",
   "morning": "Morning",
@@ -67,7 +63,6 @@
   "bookConsultation": "Book a consultation",
   "bpm": "bpm",
   "degreeF": "°F",
-  
   "quickActions": "Quick Actions",
   "bookAppointment": "Book Appointment",
   "aiTriage": "AI Triage",
@@ -75,7 +70,6 @@
   "findDoctors": "Find Doctors",
   "emergencyCall": "Emergency",
   "videocall": "Video Call",
-  
   "todaysQueue": "Today's Queue",
   "completed": "Completed",
   "pendingSOAP": "Pending SOAP",
@@ -86,10 +80,8 @@
   "joinVideoCall": "Join Video Call",
   "prescribe": "Prescribe",
   "manageAvailability": "Manage Availability",
-  
   "patientQueue": "Patient Queue",
   "noPatients": "No patients in queue",
-  
   "upcomingAppointments": "Upcoming Appointments",
   "noAppointments": "No upcoming appointments",
   "bookYourFirst": "Book your first consultation",
@@ -97,11 +89,9 @@
   "with": "with",
   "date": "Date",
   "time": "Time",
-  
   "healthInsights": "Health Insights",
   "aiPoweredAnalysis": "AI-powered health analysis",
   "getInsights": "Get Insights",
-  
   "exploreServices": "Explore Services",
   "consultSpecialist": "Consult a Specialist",
   "generalMedicine": "General Medicine",
@@ -110,16 +100,13 @@
   "dermatology": "Dermatology",
   "orthopedics": "Orthopedics",
   "gynecology": "Gynecology",
-  
   "diagnosticServices": "Diagnostic Services",
   "labTests": "Lab Tests",
   "radiologyScans": "Radiology Scans",
   "healthCheckups": "Health Checkups",
-  
   "emergencyServices": "Emergency Services",
   "ambulance": "Ambulance",
   "available247": "Available 24/7",
-  
   "orderMedicines": "Order Medicines",
   "searchMedicines": "Search medicines...",
   "prescriptionRequired": "Prescription Required",
@@ -130,7 +117,6 @@
   "checkout": "Checkout",
   "total": "Total",
   "placeOrder": "Place Order",
-  
   "medicalRecords": "Medical Records",
   "prescriptions": "Prescriptions",
   "reports": "Reports",
@@ -138,7 +124,6 @@
   "scanPrescription": "Scan Prescription",
   "scanReport": "Scan Blood Report",
   "noRecords": "No records found",
-  
   "myProfile": "My Profile",
   "personalInfo": "Personal Information",
   "editProfile": "Edit Profile",
@@ -160,7 +145,6 @@
   "shareYourExperience": "Share your experience with us",
   "comingSoon": "Coming soon!",
   "logoutConfirm": "Are you sure you want to logout?",
-  
   "bookingAppointment": "Book Appointment",
   "selectDoctor": "Select Doctor",
   "selectDateTime": "Select Date & Time",
@@ -179,7 +163,6 @@
   "proceedToPayment": "Proceed to Payment",
   "scanQRCode": "Scan QR Code",
   "confirmPayment": "Confirm Payment",
-  
   "availabilityManagement": "Manage Availability",
   "configureSlots": "Configure Time Slots",
   "selectDate": "Select Date",
@@ -193,7 +176,6 @@
   "availabilitySuccess": "Availability saved and slots generated successfully!",
   "availabilityError": "Failed to save availability",
   "startTimeBeforeEnd": "Start time must be before end time",
-  
   "videoConsultation": "Video Consultation",
   "connecting": "Connecting...",
   "connected": "Connected",
@@ -203,7 +185,6 @@
   "toggleMic": "Toggle Microphone",
   "toggleCamera": "Toggle Camera",
   "switchCamera": "Switch Camera",
-  
   "aiTriageAssessment": "AI Triage Assessment",
   "tellUsSymptoms": "Tell us about your symptoms",
   "startAssessment": "Start Assessment",
@@ -212,7 +193,6 @@
   "medium": "Medium",
   "high": "High",
   "recommendations": "Recommendations",
-  
   "loading": "Loading...",
   "retry": "Retry",
   "error": "Error",
@@ -233,7 +213,6 @@
   "continue": "Continue",
   "done": "Done",
   "close": "Close",
-  
   "errorOccurred": "An error occurred",
   "tryAgain": "Please try again",
   "noInternet": "No internet connection",
@@ -271,7 +250,6 @@
   "hospitalClinic": "Hospital / Clinic",
   "associatedHospital": "Associated Hospital",
   "professionalQualification": "Professional Qualification",
-  
   "getStarted": "Get Started",
   "logIn": "Log In",
   "welcomeToTelemedcare": "Welcome to TeleMedCare",
@@ -279,7 +257,6 @@
   "consultWithExperts": "Consult with Expert Doctors",
   "get247Support": "Get 24/7 medical support from certified professionals",
   "bookNow": "Book Now",
-  
   "chiefComplaint": "Chief Complaint",
   "describeYourSymptoms": "Describe Your Symptoms",
   "severity": "Severity",
@@ -298,7 +275,6 @@
   "describeSymptoms": "Describe your symptoms for instant risk assessment",
   "triageFailed": "Triage failed",
   "aiAssessmentDisclaimer": "AI assessment only. Consult a medical professional for diagnosis.",
-  
   "medicines": "Medicines",
   "orders": "Orders",
   "rxRequired": "Rx Required",
@@ -312,14 +288,12 @@
   "pleaseEnterDeliveryAddress": "Please enter delivery address",
   "orderPlacedSuccessfully": "Order placed successfully!",
   "checkoutFailed": "Checkout failed",
-  
   "healthRecords": "Health Records",
   "extractedText": "Extracted Text",
   "yourRecords": "Your Records",
   "noRecordsUploadedYet": "No records uploaded yet",
   "takePhotoToExtract": "Take a photo to extract text via OCR",
   "ocrFailed": "OCR failed",
-  
   "noDoctorsAvailable": "No doctors available",
   "noSpecializations": "No specializations available",
   "noDoctorsAvailableFor": "No doctors available for",
@@ -334,23 +308,20 @@
   "pleaseDescribeSymptoms": "Please describe your symptoms",
   "appointmentBookedSuccessfully": "Appointment booked successfully!",
   "failedToBookAppointment": "Failed to book appointment",
-  
   "consult": "Consult",
   "demographics": "Demographics",
   "myHealthProfile": "My Health Profile",
   "saveHealthProfile": "Save Health Profile",
   "healthProfileSaved": "Health Profile Saved Successfully",
-  "failedToSaveProfile": "Failed to save profile",  
+  "failedToSaveProfile": "Failed to save profile",
   "feedback": "Feedback",
   "teleConsultation": "Tele-Consultation",
   "offlineConsultation": "Offline Consultation",
   "consultationHistory": "Consultation History",
   "hospitalMap": "Hospital Map",
   "aiDiagnosis": "AI Diagnosis",
-  
   "mins": "mins",
   "review": "Review",
-  
   "telemedcare": "TeleMedCare",
   "telemed": "TeleMed",
   "care": "Care",
@@ -392,7 +363,6 @@
   "copyrightText": "© 2025 TeleMedCare. All rights reserved.",
   "tagline": "Premium Healthcare, Accessible Everywhere.",
   "appBrandingCare": "Care",
-
   "scheduleAndSymptoms": "Schedule & Symptoms",
   "availableTimes": "Available Times",
   "symptomsReason": "Symptoms / Reason",
@@ -420,7 +390,6 @@
   "heroSubtext": "Connect with world-class specialists instantly. Experience AI-powered diagnostics and concierge medical care.",
   "bookPriorityConsult": "Book Priority Consult",
   "offlineReview": "Offline Review",
-
   "bookingAppointment": "Book Appointment",
   "selectDoctor": "Select Doctor",
   "selectDate": "Select Date",

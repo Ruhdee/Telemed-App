@@ -34,7 +34,9 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
   Future<void> _loadMedicines() async {
     try {
       final apiClient = ref.read(apiClientProvider);
-      final response = await apiClient.get(ApiConstants.pharmaInventoryEndpoint);
+      final response = await apiClient.get(
+        ApiConstants.pharmaInventoryEndpoint,
+      );
       final data = response.data;
       if (data is List) {
         setState(() {
@@ -46,9 +48,30 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
       // Fallback data
       setState(() {
         _medicines.addAll([
-          {'id': 1, 'name': 'Paracetamol 500mg', 'description': 'Pain reliever and fever reducer.', 'price': 5.99, 'stock': 100, 'requiresPrescription': false},
-          {'id': 2, 'name': 'Amoxicillin 250mg', 'description': 'Antibiotic used to treat bacterial infections.', 'price': 12.50, 'stock': 50, 'requiresPrescription': true},
-          {'id': 3, 'name': 'Vitamin C Supplement', 'description': 'Immune system support.', 'price': 8.99, 'stock': 200, 'requiresPrescription': false},
+          {
+            'id': 1,
+            'name': 'Paracetamol 500mg',
+            'description': 'Pain reliever and fever reducer.',
+            'price': 5.99,
+            'stock': 100,
+            'requiresPrescription': false,
+          },
+          {
+            'id': 2,
+            'name': 'Amoxicillin 250mg',
+            'description': 'Antibiotic used to treat bacterial infections.',
+            'price': 12.50,
+            'stock': 50,
+            'requiresPrescription': true,
+          },
+          {
+            'id': 3,
+            'name': 'Vitamin C Supplement',
+            'description': 'Immune system support.',
+            'price': 8.99,
+            'stock': 200,
+            'requiresPrescription': false,
+          },
         ]);
       });
     } finally {
@@ -77,11 +100,21 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
                   top: 8,
                   child: Container(
                     padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                    decoration: const BoxDecoration(
+                      color: AppColors.error,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
                     child: Text(
                       '${cart.length}',
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -97,9 +130,17 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                _TabButton(label: loc.translate('medicines'), selected: _selectedTab == 0, onTap: () => setState(() => _selectedTab = 0)),
+                _TabButton(
+                  label: loc.translate('medicines'),
+                  selected: _selectedTab == 0,
+                  onTap: () => setState(() => _selectedTab = 0),
+                ),
                 const SizedBox(width: 12),
-                _TabButton(label: loc.translate('orders'), selected: _selectedTab == 1, onTap: () => setState(() => _selectedTab = 1)),
+                _TabButton(
+                  label: loc.translate('orders'),
+                  selected: _selectedTab == 1,
+                  onTap: () => setState(() => _selectedTab = 1),
+                ),
               ],
             ),
           ),
@@ -120,7 +161,11 @@ class _TabButton extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _TabButton({required this.label, required this.selected, required this.onTap});
+  const _TabButton({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +203,10 @@ class _MedicinesTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loc = AppLocalizations.of(context);
-    if (isLoading) return const Center(child: CircularProgressIndicator(color: AppColors.goldPrimary));
+    if (isLoading)
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.goldPrimary),
+      );
 
     return ListView.builder(
       padding: const EdgeInsets.all(16),
@@ -184,36 +232,89 @@ class _MedicinesTab extends ConsumerWidget {
                     color: AppColors.goldLight.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(14),
                   ),
-                  child: const Icon(LucideIcons.pill, color: AppColors.goldDark, size: 28),
+                  child: const Icon(
+                    LucideIcons.pill,
+                    color: AppColors.goldDark,
+                    size: 28,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(med['name'] ?? '', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                      Text(
+                        med['name'] ?? '',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                        ),
+                      ),
                       if (isRx)
-                         Container(
-                           margin: const EdgeInsets.only(top: 4, bottom: 4),
-                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                           decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
-                           child: Text(loc.translate('rxRequired'), style: const TextStyle(fontSize: 10, color: AppColors.warning, fontWeight: FontWeight.bold)),
-                         ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 4, bottom: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            loc.translate('rxRequired'),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: AppColors.warning,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       const SizedBox(height: 4),
-                      Text(med['description'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                      Text(
+                        med['description'] ?? '',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('\$${price.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.goldDark)),
+                          Text(
+                            '₹${price.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.goldDark,
+                            ),
+                          ),
                           AppButton(
                             label: loc.translate('add'),
-                            icon: const Icon(LucideIcons.plus, size: 16, color: Colors.white),
+                            icon: const Icon(
+                              LucideIcons.plus,
+                              size: 16,
+                              color: Colors.white,
+                            ),
                             variant: AppButtonVariant.primary,
-                            onPressed: stock > 0 ? () {
-                              ref.read(cartProvider.notifier).addItem(med);
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.translate('addedToCart')), duration: const Duration(seconds: 1)));
-                            } : null,
+                            onPressed: stock > 0
+                                ? () {
+                                    ref
+                                        .read(cartProvider.notifier)
+                                        .addItem(med);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          loc.translate('addedToCart'),
+                                        ),
+                                        duration: const Duration(seconds: 1),
+                                      ),
+                                    );
+                                  }
+                                : null,
                           ),
                         ],
                       ),
@@ -241,9 +342,15 @@ class _OrdersTab extends StatelessWidget {
         children: [
           Icon(LucideIcons.package, size: 48, color: AppColors.textMuted),
           const SizedBox(height: 16),
-          Text(loc.translate('noOrdersYet'), style: const TextStyle(fontSize: 16, color: AppColors.textMuted)),
+          Text(
+            loc.translate('noOrdersYet'),
+            style: const TextStyle(fontSize: 16, color: AppColors.textMuted),
+          ),
           const SizedBox(height: 8),
-          Text(loc.translate('yourMedicationOrders'), style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
+          Text(
+            loc.translate('yourMedicationOrders'),
+            style: const TextStyle(fontSize: 13, color: AppColors.textMuted),
+          ),
         ],
       ),
     ).animate().fadeIn();

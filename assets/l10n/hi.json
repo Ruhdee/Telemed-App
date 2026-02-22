@@ -10,7 +10,6 @@
   "dontHaveAccount": "खाता नहीं है?",
   "signUp": "साइन अप",
   "forgotPassword": "पासवर्ड भूल गए?",
-  
   "createAccount": "खाता बनाएं",
   "registerPrompt": "प्रीमियम हेल्थकेयर के लिए हमसे जुड़ें",
   "name": "नाम",
@@ -26,7 +25,6 @@
   "admin": "एडमिन",
   "alreadyHaveAccount": "पहले से खाता है?",
   "next": "आगे",
-  
   "doctorRegistration": "डॉक्टर पंजीकरण",
   "professionalDetails": "व्यावसायिक विवरण",
   "specialization": "विशेषज्ञता",
@@ -40,7 +38,6 @@
   "qualification": "योग्यता",
   "qualificationHint": "MBBS, MD, आदि।",
   "shift": "शिफ्ट",
-  
   "dashboard": "डैशबोर्ड",
   "patientDashboard": "मरीज डैशबोर्ड",
   "doctorDashboard": "डॉक्टर डैशबोर्ड",
@@ -49,7 +46,6 @@
   "pharmacy": "फार्मेसी",
   "records": "रिकॉर्ड",
   "profile": "प्रोफाइल",
-  
   "hello": "नमस्ते",
   "good": "शुभ",
   "morning": "सुबह",
@@ -62,7 +58,6 @@
   "oxygenLevel": "ऑक्सीजन",
   "bpm": "bpm",
   "degreeF": "°F",
-  
   "quickActions": "त्वरित क्रियाएं",
   "videoConsult": "वीडियो परामर्श",
   "aiDiagnosis": "AI निदान",
@@ -75,7 +70,6 @@
   "findDoctors": "डॉक्टर खोजें",
   "emergencyCall": "आपातकाल",
   "videocall": "वीडियो कॉल",
-  
   "todaysQueue": "आज की कतार",
   "completed": "पूर्ण",
   "pendingSOAP": "लंबित SOAP",
@@ -86,10 +80,8 @@
   "joinVideoCall": "वीडियो कॉल में शामिल हों",
   "prescribe": "प्रिस्क्राइब",
   "manageAvailability": "उपलब्धता प्रबंधित करें",
-  
   "patientQueue": "मरीजों की कतार",
   "noPatients": "कतार में कोई मरीज नहीं",
-  
   "upcomingAppointments": "आगामी अपॉइंटमेंट",
   "noAppointments": "कोई आगामी अपॉइंटमेंट नहीं",
   "bookYourFirst": "अपना पहला परामर्श बुक करें",
@@ -97,11 +89,9 @@
   "with": "के साथ",
   "date": "तारीख",
   "time": "समय",
-  
   "healthInsights": "स्वास्थ्य अंतर्दृष्टि",
   "aiPoweredAnalysis": "AI-संचालित स्वास्थ्य विश्लेषण",
   "getInsights": "अंतर्दृष्टि प्राप्त करें",
-  
   "exploreServices": "सेवाएं खोजें",
   "consultSpecialist": "विशेषज्ञ से परामर्श",
   "generalMedicine": "सामान्य चिकित्सा",
@@ -110,16 +100,13 @@
   "dermatology": "त्वचा विज्ञान",
   "orthopedics": "आर्थोपेडिक्स",
   "gynecology": "स्त्री रोग",
-  
   "diagnosticServices": "निदान सेवाएं",
   "labTests": "लैब परीक्षण",
   "radiologyScans": "रेडियोलॉजी स्कैन",
   "healthCheckups": "स्वास्थ्य जांच",
-  
   "emergencyServices": "आपातकालीन सेवाएं",
   "ambulance": "एम्बुलेंस",
   "available247": "24/7 उपलब्ध",
-  
   "orderMedicines": "दवाएं ऑर्डर करें",
   "searchMedicines": "दवाएं खोजें...",
   "prescriptionRequired": "पर्चे की आवश्यकता",
@@ -130,7 +117,6 @@
   "checkout": "चेकआउट",
   "total": "कुल",
   "placeOrder": "ऑर्डर दें",
-  
   "medicalRecords": "चिकित्सा रिकॉर्ड",
   "prescriptions": "प्रिस्क्रिप्शन",
   "reports": "रिपोर्ट",
@@ -138,7 +124,6 @@
   "scanPrescription": "प्रिस्क्रिप्शन स्कैन करें",
   "scanReport": "ब्लड रिपोर्ट स्कैन करें",
   "noRecords": "कोई रिकॉर्ड नहीं मिला",
-  
   "myProfile": "मेरी प्रोफाइल",
   "personalInfo": "व्यक्तिगत जानकारी",
   "editProfile": "प्रोफाइल संपादित करें",
@@ -148,7 +133,8 @@
   "privacyPolicy": "गोपनीयता नीति",
   "termsConditions": "नियम और शर्तें",
   "helpSupport": "सहायता और समर्थन",
-  "logout": "लॉगआउट",  "account": "खाता",
+  "logout": "लॉगआउट",
+  "account": "खाता",
   "support": "समर्थन",
   "help": "सहायता",
   "faqAndSupport": "FAQ और समर्थन",
@@ -158,7 +144,7 @@
   "email": "ईमेल",
   "shareYourExperience": "अपना अनुभव हमारे साथ साझा करें",
   "comingSoon": "जल्द आ रहा है!",
-  "logoutConfirm": "क्या आप वाकई लॉग आउट करना चाहते हैं?",  
+  "logoutConfirm": "क्या आप वाकई लॉग आउट करना चाहते हैं?",
   "bookingAppointment": "अपॉइंटमेंट बुक करें",
   "selectDoctor": "डॉक्टर चुनें",
   "selectDateTime": "तारीख और समय चुनें",
@@ -177,7 +163,6 @@
   "proceedToPayment": "भुगतान के लिए आगे बढ़ें",
   "scanQRCode": "QR कोड स्कैन करें",
   "confirmPayment": "भुगतान की पुष्टि करें",
-  
   "availabilityManagement": "उपलब्धता प्रबंधित करें",
   "configureSlots": "समय स्लॉट कॉन्फ़िगर करें",
   "selectDate": "तारीख चुनें",
@@ -191,7 +176,6 @@
   "availabilitySuccess": "उपलब्धता सहेजी गई और स्लॉट सफलतापूर्वक जनरेट किए गए!",
   "availabilityError": "उपलब्धता सहेजने में विफल",
   "startTimeBeforeEnd": "शुरुआती समय समाप्ति समय से पहले होना चाहिए",
-  
   "videoConsultation": "वीडियो परामर्श",
   "connecting": "कनेक्ट हो रहा है...",
   "connected": "कनेक्टेड",
@@ -201,7 +185,6 @@
   "toggleMic": "माइक्रोफोन टॉगल करें",
   "toggleCamera": "कैमरा टॉगल करें",
   "switchCamera": "कैमरा स्विच करें",
-  
   "aiTriageAssessment": "AI ट्राइएज मूल्यांकन",
   "tellUsSymptoms": "हमें अपने लक्षणों के बारे में बताएं",
   "startAssessment": "मूल्यांकन शुरू करें",
@@ -210,7 +193,6 @@
   "medium": "मध्यम",
   "high": "उच्च",
   "recommendations": "सिफारिशें",
-  
   "loading": "लोड हो रहा है...",
   "retry": "पुनः प्रयास करें",
   "error": "त्रुटि",
@@ -231,7 +213,6 @@
   "continue": "जारी रखें",
   "done": "पूर्ण",
   "close": "बंद करें",
-  
   "errorOccurred": "एक त्रुटि हुई",
   "tryAgain": "कृपया पुनः प्रयास करें",
   "noInternet": "कोई इंटरनेट कनेक्शन नहीं",
@@ -269,7 +250,6 @@
   "hospitalClinic": "अस्पताल / क्लिनिक",
   "associatedHospital": "संबद्ध अस्पताल",
   "professionalQualification": "व्यावसायिक योग्यता",
-  
   "getStarted": "शुरू करें",
   "logIn": "लॉग इन",
   "welcomeToTelemedcare": "TeleMedCare में आपका स्वागत है",
@@ -277,7 +257,6 @@
   "consultWithExperts": "विशेषज्ञ डॉक्टरों से परामर्श करें",
   "get247Support": "प्रमाणित पेशेवरों से 24/7 चिकित्सा सहायता प्राप्त करें",
   "bookNow": "अभी बुक करें",
-  
   "chiefComplaint": "मुख्य शिकायत",
   "describeYourSymptoms": "अपने लक्षणों का वर्णन करें",
   "severity": "गंभीरता",
@@ -296,7 +275,6 @@
   "describeSymptoms": "त्वरित जोखिम मूल्यांकन के लिए अपने लक्षणों का वर्णन करें",
   "triageFailed": "ट्राइएज विफल",
   "aiAssessmentDisclaimer": "केवल AI मूल्यांकन। निदान के लिए चिकित्सा पेशेवर से परामर्श लें।",
-  
   "medicines": "दवाएं",
   "orders": "ऑर्डर",
   "rxRequired": "Rx आवश्यक",
@@ -310,14 +288,12 @@
   "pleaseEnterDeliveryAddress": "कृपया डिलीवरी का पता दर्ज करें",
   "orderPlacedSuccessfully": "ऑर्डर सफलतापूर्वक दिया गया!",
   "checkoutFailed": "चेकआउट विफल",
-  
   "healthRecords": "स्वास्थ्य रिकॉर्ड",
   "extractedText": "निकाला गया टेक्स्ट",
   "yourRecords": "आपके रिकॉर्ड",
   "noRecordsUploadedYet": "अभी तक कोई रिकॉर्ड अपलोड नहीं किया गया",
   "takePhotoToExtract": "OCR के माध्यम से टेक्स्ट निकालने के लिए फोटो लें",
   "ocrFailed": "OCR विफल",
-  
   "noDoctorsAvailable": "कोई डॉक्टर उपलब्ध नहीं",
   "noSpecializations": "कोई विशेषज्ञता उपलब्ध नहीं",
   "noDoctorsAvailableFor": "के लिए कोई डॉक्टर उपलब्ध नहीं",
@@ -332,23 +308,20 @@
   "pleaseDescribeSymptoms": "कृपया अपने लक्षणों का वर्णन करें",
   "appointmentBookedSuccessfully": "अपॉइंटमेंट सफलतापूर्वक बुक किया गया!",
   "failedToBookAppointment": "अपॉइंटमेंट बुक करने में विफल",
-  
   "consult": "परामर्श",
   "demographics": "जनसांख्यिकी",
   "myHealthProfile": "मेरी स्वास्थ्य प्रोफाइल",
   "saveHealthProfile": "स्वास्थ्य प्रोफाइल सहेजें",
   "healthProfileSaved": "स्वास्थ्य प्रोफाइल सफलतापूर्वक सहेजी गई",
-  "failedToSaveProfile": "प्रोफाइल सहेजने में विफल",  
+  "failedToSaveProfile": "प्रोफाइल सहेजने में विफल",
   "feedback": "फीडबैक",
   "teleConsultation": "टेली-परामर्श",
   "offlineConsultation": "ऑफलाइन परामर्श",
   "consultationHistory": "परामर्श इतिहास",
   "hospitalMap": "अस्पताल मानचित्र",
   "aiDiagnosis": "AI निदान",
-  
   "mins": "मिनट",
   "review": "समीक्षा",
-  
   "telemedcare": "TeleMedCare",
   "telemed": "TeleMed",
   "care": "Care",
@@ -390,7 +363,6 @@
   "copyrightText": "© 2025 TeleMedCare। सर्वाधिकार सुरक्षित।",
   "tagline": "प्रीमियम स्वास्थ्य सेवा, हर जगह सुलभ।",
   "appBrandingCare": "देखभाल",
-
   "scheduleAndSymptoms": "शेड्यूल और लक्षण",
   "availableTimes": "उपलब्ध समय",
   "symptomsReason": "लक्षण / कारण",
@@ -418,7 +390,6 @@
   "heroSubtext": "विश्व-स्तरीय विशेषज्ञों से तुरंत जुड़ें। AI-संचालित निदान और कंसीयर चिकित्सा देखभाल का अनुभव करें।",
   "bookPriorityConsult": "प्राथमिकता परामर्श बुक करें",
   "offlineReview": "ऑफलाइन समीक्षा",
-
   "bookingAppointment": "अपॉइंटमेंट बुक करें",
   "selectDoctor": "डॉक्टर चुनें",
   "selectDate": "तारीख चुनें",

@@ -33,10 +33,13 @@ class Appointment {
       patientName: (json['patientId'] is Map)
           ? (json['patientId']['name'] ?? 'Unknown Patient')
           : json['patientName'] ?? 'Unknown Patient',
-      chiefComplaint: json['symptoms'] ?? json['chiefComplaint'] ?? 'General Consultation',
+      chiefComplaint:
+          json['symptoms'] ?? json['chiefComplaint'] ?? 'General Consultation',
       riskLevel: json['riskLevel'],
       status: json['status'] ?? 'pending',
-      scheduledDate: json['date'] != null ? DateTime.tryParse(json['date']) ?? DateTime.now() : DateTime.now(),
+      scheduledDate: json['date'] != null
+          ? DateTime.tryParse(json['date']) ?? DateTime.now()
+          : DateTime.now(),
     );
   }
 }
@@ -79,10 +82,14 @@ class DashboardState {
   }
 }
 
-final dashboardProvider = StateNotifierProvider<DashboardNotifier, DashboardState>((ref) {
-  final authState = ref.watch(authProvider);
-  return DashboardNotifier(ref.read(apiClientProvider), authState.valueOrNull);
-});
+final dashboardProvider =
+    StateNotifierProvider<DashboardNotifier, DashboardState>((ref) {
+      final authState = ref.watch(authProvider);
+      return DashboardNotifier(
+        ref.read(apiClientProvider),
+        authState.valueOrNull,
+      );
+    });
 
 class DashboardNotifier extends StateNotifier<DashboardState> {
   final ApiClient _apiClient;
@@ -98,10 +105,22 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
     state = state.copyWith(isLoading: true);
     try {
       if (_user!.role == UserRole.doctor) {
-        state = state.copyWith(vitals: [
-          VitalSign(label: 'Total Patients', value: '124', unit: '', icon: 'users'),
-          VitalSign(label: 'Avg Rating', value: '4.8', unit: '⭐', icon: 'star'),
-        ]);
+        state = state.copyWith(
+          vitals: [
+            VitalSign(
+              label: 'Total Patients',
+              value: '124',
+              unit: '',
+              icon: 'users',
+            ),
+            VitalSign(
+              label: 'Avg Rating',
+              value: '4.8',
+              unit: '⭐',
+              icon: 'star',
+            ),
+          ],
+        );
         await _fetchDoctorAppointments();
       } else {
         await _fetchPatientData();
@@ -123,27 +142,36 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
 
     List<Appointment> appointments = [];
     try {
-      final apptRes = await _apiClient.get(ApiConstants.patientAppointmentsEndpoint);
+      final apptRes = await _apiClient.get(
+        ApiConstants.patientAppointmentsEndpoint,
+      );
       final data = apptRes.data;
       if (data != null) {
         final List list = data is List ? data : (data['data'] ?? []);
-        appointments = list.map((e) => Appointment.fromJson(e as Map<String, dynamic>)).toList();
+        appointments = list
+            .map((e) => Appointment.fromJson(e as Map<String, dynamic>))
+            .toList();
       }
     } catch (e) {
       AppLogger.error('Dashboard', 'Failed to fetch appointments', e);
     }
 
-    if (mounted) state = state.copyWith(vitals: vitals, appointments: appointments);
+    if (mounted)
+      state = state.copyWith(vitals: vitals, appointments: appointments);
   }
 
   Future<void> _fetchDoctorAppointments() async {
     List<Appointment> appointments = [];
     try {
-      final apptRes = await _apiClient.get(ApiConstants.doctorAppointmentsEndpoint);
+      final apptRes = await _apiClient.get(
+        ApiConstants.doctorAppointmentsEndpoint,
+      );
       final data = apptRes.data;
       if (data != null) {
         final List list = data is List ? data : (data['data'] ?? []);
-        appointments = list.map((e) => Appointment.fromJson(e as Map<String, dynamic>)).toList();
+        appointments = list
+            .map((e) => Appointment.fromJson(e as Map<String, dynamic>))
+            .toList();
       }
     } catch (e) {
       AppLogger.error('Dashboard', 'Failed to fetch doctor appointments', e);
