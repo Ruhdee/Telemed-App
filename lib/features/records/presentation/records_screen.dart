@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/glass_panel.dart';
@@ -89,8 +90,9 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
       AppLogger.error('RECORDS', 'OCR failed', e);
       setState(() => _isUploading = false);
       if (mounted) {
+        final errorLoc = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('OCR failed: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text('${errorLoc.translate('ocrFailed')}: $e'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -98,13 +100,14 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Health Records'),
+        title: Text(loc.translate('healthRecords')),
         actions: [
           IconButton(
             icon: const Icon(LucideIcons.camera),
-            tooltip: 'Scan Prescription',
+            tooltip: loc.translate('scanPrescription'),
             onPressed: _uploadAndOcr,
           ),
         ],
@@ -122,9 +125,9 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                       children: [
                         Icon(LucideIcons.scanLine, size: 36, color: AppColors.goldPrimary),
                         const SizedBox(height: 12),
-                        const Text('Scan Prescription', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
-                        const SizedBox(height: 6),
-                        const Text('Take a photo to extract text via OCR', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                        Text(loc.translate('scanPrescription'), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                        const SizedBox(height: 4),
+                        Text(loc.translate('takePhotoToExtract'), style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                         const SizedBox(height: 16),
                         AppButton(
                           label: _isUploading ? 'Processing...' : 'Capture & Scan',
@@ -145,7 +148,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Extracted Text', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                          Text(loc.translate('extractedText'), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
                           const SizedBox(height: 8),
                           Container(
                             width: double.infinity,
@@ -164,7 +167,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                   const SizedBox(height: 28),
 
                   // Records list
-                  Text('Your Records', style: Theme.of(context).textTheme.headlineMedium),
+                  Text(loc.translate('yourRecords'), style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 12),
 
                   if (_records.isEmpty)
@@ -176,7 +179,7 @@ class _RecordsScreenState extends ConsumerState<RecordsScreen> {
                             children: [
                               Icon(LucideIcons.fileText, size: 40, color: AppColors.textMuted),
                               const SizedBox(height: 12),
-                              const Text('No records uploaded yet', style: TextStyle(color: AppColors.textMuted)),
+                              Text(loc.translate('noRecordsUploadedYet'), style: const TextStyle(color: AppColors.textMuted)),
                             ],
                           ),
                         ),

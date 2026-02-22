@@ -25,7 +25,6 @@ import '../../features/online_consultation/presentation/doctor_video_call_screen
 import '../../features/online_consultation/presentation/book_appointment_screen.dart';
 import '../../features/demographics/presentation/demographics_screen.dart';
 import '../../features/feedback/presentation/feedback_screen.dart';
-import '../../features/services/presentation/services_screen.dart';
 import '../../features/settings/presentation/language_settings_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../utils/app_logger.dart';
@@ -195,11 +194,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: 'feedback',
                 name: 'feedback',
                 builder: (context, state) => const FeedbackScreen(),
-              ),
-              GoRoute(
-                path: 'services',
-                name: 'services',
-                builder: (context, state) => const ServicesScreen(),
               ),
               GoRoute(
                 path: 'book-appointment',

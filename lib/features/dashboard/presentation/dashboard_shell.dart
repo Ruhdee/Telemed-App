@@ -36,23 +36,41 @@ class DashboardShell extends ConsumerWidget {
               ),
             ),
             _DrawerItem(icon: LucideIcons.user, label: loc.translate('myProfile'), onTap: () {
-              Navigator.pop(context);
               context.go('/dashboard/profile');
             }),
             _DrawerItem(icon: LucideIcons.heartPulse, label: loc.translate('healthProfile'), onTap: () {
-              Navigator.pop(context);
               context.go('/dashboard/demographics');
             }),
-            _DrawerItem(icon: LucideIcons.calendar, label: loc.translate('services'), onTap: () => _onItemTapped(2, context)),
-            _DrawerItem(icon: LucideIcons.video, label: loc.translate('teleConsultation'), onTap: () => context.go('/dashboard/consultation')),
-            _DrawerItem(icon: LucideIcons.videoOff, label: loc.translate('offlineConsultation'), onTap: () => context.go('/dashboard/offline-consultation')),
-            _DrawerItem(icon: LucideIcons.history, label: loc.translate('consultationHistory'), onTap: () => context.go('/dashboard/consultation-history')),
-            _DrawerItem(icon: LucideIcons.fileText, label: loc.translate('healthRecords'), onTap: () => context.go('/dashboard/records')),
-            _DrawerItem(icon: LucideIcons.pill, label: loc.translate('pharmacy'), onTap: () => context.go('/dashboard/pharmacy')),
-            _DrawerItem(icon: LucideIcons.mapPin, label: loc.translate('hospitalMap'), onTap: () => context.go('/dashboard/map')),
-            _DrawerItem(icon: LucideIcons.brain, label: loc.translate('aiDiagnosis'), onTap: () => context.go('/dashboard/ai-diagnosis')),
-            _DrawerItem(icon: LucideIcons.stethoscope, label: loc.translate('aiTriage'), onTap: () => context.go('/dashboard/triage')),
-            _DrawerItem(icon: LucideIcons.star, label: loc.translate('feedback'), onTap: () => context.go('/dashboard/feedback')),
+            _DrawerItem(icon: LucideIcons.calendar, label: loc.translate('services'), onTap: () {
+              _onItemTapped(2, context);
+            }),
+            _DrawerItem(icon: LucideIcons.video, label: loc.translate('teleConsultation'), onTap: () {
+              context.go('/dashboard/consultation');
+            }),
+            _DrawerItem(icon: LucideIcons.videoOff, label: loc.translate('offlineConsultation'), onTap: () {
+              context.go('/dashboard/offline-consultation');
+            }),
+            _DrawerItem(icon: LucideIcons.history, label: loc.translate('consultationHistory'), onTap: () {
+              context.go('/dashboard/consultation-history');
+            }),
+            _DrawerItem(icon: LucideIcons.fileText, label: loc.translate('healthRecords'), onTap: () {
+              context.go('/dashboard/records');
+            }),
+            _DrawerItem(icon: LucideIcons.pill, label: loc.translate('pharmacy'), onTap: () {
+              context.go('/dashboard/pharmacy');
+            }),
+            _DrawerItem(icon: LucideIcons.mapPin, label: loc.translate('hospitalMap'), onTap: () {
+              context.go('/dashboard/map');
+            }),
+            _DrawerItem(icon: LucideIcons.brain, label: loc.translate('aiDiagnosis'), onTap: () {
+              context.go('/dashboard/ai-diagnosis');
+            }),
+            _DrawerItem(icon: LucideIcons.stethoscope, label: loc.translate('aiTriage'), onTap: () {
+              context.go('/dashboard/triage');
+            }),
+            _DrawerItem(icon: LucideIcons.star, label: loc.translate('feedback'), onTap: () {
+              context.go('/dashboard/feedback');
+            }),
           ],
         ),
       ),
@@ -76,7 +94,8 @@ class DashboardShell extends ConsumerWidget {
 
   int _calculateSelectedIndex(String location) {
     if (location.startsWith('/dashboard/profile')) return 1;
-    if (location.startsWith('/dashboard/services')) return 2;
+    if (location.startsWith('/dashboard/services') ||
+        location.startsWith('/dashboard/book-appointment')) return 2;
     if (location.startsWith('/dashboard/consultation') || location.startsWith('/dashboard/offline-consultation')) return 3;
     return 0; // Home is default
   }
@@ -90,7 +109,7 @@ class DashboardShell extends ConsumerWidget {
         context.go('/dashboard/profile');
         break;
       case 2:
-        context.go('/dashboard/services');
+        context.go('/dashboard/book-appointment');
         break;
       case 3:
         context.go('/dashboard/consultation');

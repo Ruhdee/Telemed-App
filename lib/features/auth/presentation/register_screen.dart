@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/glass_panel.dart';
 import '../domain/user_model.dart';
@@ -75,10 +76,11 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
 
     // Validate passwords match
+    final loc = AppLocalizations.of(context);
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Passwords do not match'),
+        SnackBar(
+          content: Text(loc.translate('passwordsDoNotMatch')),
           backgroundColor: AppColors.error,
         ),
       );
@@ -93,8 +95,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           _hospitalNameController.text.trim().isEmpty ||
           _qualificationController.text.trim().isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please fill all doctor registration fields'),
+          SnackBar(
+            content: Text(loc.translate('pleaseFillAllDoctorFields')),
             backgroundColor: AppColors.error,
           ),
         );
@@ -133,12 +135,13 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    final loc = AppLocalizations.of(context);
 
     ref.listen(authProvider, (previous, next) {
       if (next.hasError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Registration failed: ${next.error}'),
+            content: Text('${loc.translate('registrationFailed')}: ${next.error}'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -182,15 +185,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                   ).animate().fadeIn(duration: 400.ms).scale(begin: const Offset(0.8, 0.8)),
 
                   const SizedBox(height: 24),
-                  Text('Create Account', style: Theme.of(context).textTheme.displayMedium).animate().fadeIn(delay: 100.ms),
+                  Text(loc.translate('createAccount'), style: Theme.of(context).textTheme.displayMedium).animate().fadeIn(delay: 100.ms),
                   const SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
                         _selectedRole == UserRole.doctor 
-                            ? 'Step $_currentStep of 2'
-                            : 'Join TeleMedCare today',
+                            ? '${loc.translate('stepOf')} $_currentStep ${loc.translate('of')} 2'
+                            : loc.translate('joinTelemedcareToday'),
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       if (_currentStep == 2 && _selectedRole == UserRole.doctor)
@@ -268,16 +271,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   List<Widget> _buildStep1Fields() {
+    final loc = AppLocalizations.of(context);
     return [
       // Name
       TextFormField(
         controller: _nameController,
-        decoration: const InputDecoration(
-          labelText: 'Full Name',
-          hintText: 'John Doe',
-          prefixIcon: Icon(Icons.person_outline),
+        decoration: InputDecoration(
+          labelText: loc.translate('fullName'),
+          hintText: loc.translate('nameHint'),
+          prefixIcon: const Icon(Icons.person_outline),
         ),
-        validator: (v) => (v == null || v.isEmpty) ? 'Name required' : null,
+        validator: (v) => (v == null || v.isEmpty) ? loc.translate('nameRequired') : null,
       ),
       const SizedBox(height: 16),
 
@@ -285,14 +289,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       TextFormField(
         controller: _emailController,
         keyboardType: TextInputType.emailAddress,
-        decoration: const InputDecoration(
-          labelText: 'Email',
-          hintText: 'you@example.com',
-          prefixIcon: Icon(Icons.email_outlined),
+        decoration: InputDecoration(
+          labelText: loc.translate('email'),
+          hintText: loc.translate('emailHint'),
+          prefixIcon: const Icon(Icons.email_outlined),
         ),
         validator: (v) {
-          if (v == null || v.isEmpty) return 'Email required';
-          if (!v.contains('@')) return 'Invalid email';
+          if (v == null || v.isEmpty) return loc.translate('emailRequired');
+          if (!v.contains('@')) return loc.translate('invalidEmail');
           return null;
         },
       ),
@@ -302,21 +306,21 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       TextFormField(
         controller: _phoneController,
         keyboardType: TextInputType.phone,
-        decoration: const InputDecoration(
-          labelText: 'Phone Number',
-          hintText: '+1 (555) 000-0000',
-          prefixIcon: Icon(Icons.phone_outlined),
+        decoration: InputDecoration(
+          labelText: loc.translate('phone'),
+          hintText: loc.translate('phoneHint'),
+          prefixIcon: const Icon(Icons.phone_outlined),
         ),
-        validator: (v) => (v == null || v.isEmpty) ? 'Phone required' : null,
+        validator: (v) => (v == null || v.isEmpty) ? loc.translate('phoneRequired') : null,
       ),
       const SizedBox(height: 16),
 
       // Role
       DropdownButtonFormField<UserRole>(
         value: _selectedRole,
-        decoration: const InputDecoration(
-          labelText: 'Role',
-          prefixIcon: Icon(Icons.badge_outlined),
+        decoration: InputDecoration(
+          labelText: loc.translate('role'),
+          prefixIcon: const Icon(Icons.badge_outlined),
         ),
         items: UserRole.values.map((role) {
           return DropdownMenuItem(
@@ -336,8 +340,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           controller: _passwordController,
           obscureText: _obscurePassword,
           decoration: InputDecoration(
-            labelText: 'Password',
-            hintText: '••••••••',
+            labelText: loc.translate('password'),
+            hintText: loc.translate('passwordHint'),
             prefixIcon: const Icon(Icons.lock_outline),
             suffixIcon: IconButton(
               icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
@@ -345,8 +349,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
           ),
           validator: (v) {
-            if (v == null || v.isEmpty) return 'Password required';
-            if (v.length < 6) return 'Min 6 characters';
+            if (v == null || v.isEmpty) return loc.translate('passwordRequired');
+            if (v.length < 6) return loc.translate('minSixChars');
             return null;
           },
         ),
@@ -356,8 +360,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           controller: _confirmPasswordController,
           obscureText: _obscureConfirmPassword,
           decoration: InputDecoration(
-            labelText: 'Confirm Password',
-            hintText: '••••••••',
+            labelText: loc.translate('confirmPassword'),
+            hintText: loc.translate('passwordHint'),
             prefixIcon: const Icon(Icons.lock_outline),
             suffixIcon: IconButton(
               icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
@@ -365,7 +369,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
           ),
           validator: (v) {
-            if (v == null || v.isEmpty) return 'Confirm password required';
+            if (v == null || v.isEmpty) return loc.translate('confirmPasswordRequired');
             return null;
           },
         ),
@@ -376,14 +380,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
           value: _nurseShift,
-          decoration: const InputDecoration(
-            labelText: 'Shift',
-            prefixIcon: Icon(Icons.access_time),
+          decoration: InputDecoration(
+            labelText: loc.translate('shift'),
+            prefixIcon: const Icon(Icons.access_time),
           ),
           items: ['Morning', 'Night'].map((shift) {
             return DropdownMenuItem(
               value: shift,
-              child: Text(shift),
+              child: Text(shift == 'Morning' ? loc.translate('morning') : loc.translate('night')),
             );
           }).toList(),
           onChanged: (v) {
@@ -395,16 +399,17 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   }
 
   List<Widget> _buildStep2DoctorFields() {
+    final loc = AppLocalizations.of(context);
     return [
       // Specialization
       TextFormField(
         controller: _specializationController,
-        decoration: const InputDecoration(
-          labelText: 'Specialization',
-          hintText: 'e.g. Cardiology',
-          prefixIcon: Icon(Icons.medical_services_outlined),
+        decoration: InputDecoration(
+          labelText: loc.translate('specialization'),
+          hintText: loc.translate('specializationHint'),
+          prefixIcon: const Icon(Icons.medical_services_outlined),
         ),
-        validator: (v) => (v == null || v.isEmpty) ? 'Specialization required' : null,
+        validator: (v) => (v == null || v.isEmpty) ? loc.translate('specializationRequired') : null,
       ),
       const SizedBox(height: 16),
 
@@ -415,24 +420,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             child: TextFormField(
               controller: _experienceController,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Experience (Years)',
-                hintText: 'e.g. 5',
-                prefixIcon: Icon(Icons.work_outline),
+              decoration: InputDecoration(
+                labelText: loc.translate('experienceYears'),
+                hintText: loc.translate('experienceHint'),
+                prefixIcon: const Icon(Icons.work_outline),
               ),
-              validator: (v) => (v == null || v.isEmpty) ? 'Experience required' : null,
+              validator: (v) => (v == null || v.isEmpty) ? loc.translate('experienceRequired') : null,
             ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: TextFormField(
               controller: _registrationNumberController,
-              decoration: const InputDecoration(
-                labelText: 'Reg. Number',
-                hintText: 'Reg. ID',
-                prefixIcon: Icon(Icons.badge_outlined),
+              decoration: InputDecoration(
+                labelText: loc.translate('regNumber'),
+                hintText: loc.translate('regId'),
+                prefixIcon: const Icon(Icons.badge_outlined),
               ),
-              validator: (v) => (v == null || v.isEmpty) ? 'Reg. number required' : null,
+              validator: (v) => (v == null || v.isEmpty) ? loc.translate('regNumberRequired') : null,
             ),
           ),
         ],
@@ -442,24 +447,24 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       // Hospital Name
       TextFormField(
         controller: _hospitalNameController,
-        decoration: const InputDecoration(
-          labelText: 'Hospital / Clinic',
-          hintText: 'Associated Hospital',
-          prefixIcon: Icon(Icons.local_hospital_outlined),
+        decoration: InputDecoration(
+          labelText: loc.translate('hospitalClinic'),
+          hintText: loc.translate('associatedHospital'),
+          prefixIcon: const Icon(Icons.local_hospital_outlined),
         ),
-        validator: (v) => (v == null || v.isEmpty) ? 'Hospital name required' : null,
+        validator: (v) => (v == null || v.isEmpty) ? loc.translate('hospitalNameRequired') : null,
       ),
       const SizedBox(height: 16),
 
       // Qualification
       TextFormField(
         controller: _qualificationController,
-        decoration: const InputDecoration(
-          labelText: 'Professional Qualification',
-          hintText: 'e.g. MBBS, MD',
-          prefixIcon: Icon(Icons.school_outlined),
+        decoration: InputDecoration(
+          labelText: loc.translate('professionalQualification'),
+          hintText: loc.translate('qualificationHint'),
+          prefixIcon: const Icon(Icons.school_outlined),
         ),
-        validator: (v) => (v == null || v.isEmpty) ? 'Qualification required' : null,
+        validator: (v) => (v == null || v.isEmpty) ? loc.translate('qualificationRequired') : null,
       ),
       const SizedBox(height: 16),
 
@@ -468,8 +473,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         controller: _passwordController,
         obscureText: _obscurePassword,
         decoration: InputDecoration(
-          labelText: 'Password',
-          hintText: '••••••••',
+          labelText: loc.translate('password'),
+          hintText: loc.translate('passwordHint'),
           prefixIcon: const Icon(Icons.lock_outline),
           suffixIcon: IconButton(
             icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
@@ -477,8 +482,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
         ),
         validator: (v) {
-          if (v == null || v.isEmpty) return 'Password required';
-          if (v.length < 6) return 'Min 6 characters';
+          if (v == null || v.isEmpty) return loc.translate('passwordRequired');
+          if (v.length < 6) return loc.translate('minSixChars');
           return null;
         },
       ),
@@ -489,8 +494,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         controller: _confirmPasswordController,
         obscureText: _obscureConfirmPassword,
         decoration: InputDecoration(
-          labelText: 'Confirm Password',
-          hintText: '••••••••',
+          labelText: loc.translate('confirmPassword'),
+          hintText: loc.translate('passwordHint'),
           prefixIcon: const Icon(Icons.lock_outline),
           suffixIcon: IconButton(
             icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility),
@@ -498,7 +503,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
         ),
         validator: (v) {
-          if (v == null || v.isEmpty) return 'Confirm password required';
+          if (v == null || v.isEmpty) return loc.translate('confirmPasswordRequired');
           return null;
         },
       ),

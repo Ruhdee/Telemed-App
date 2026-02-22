@@ -4,7 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_logger.dart';
-
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../../shared/widgets/app_button.dart';
 import '../../../shared/widgets/glass_panel.dart';
@@ -80,8 +80,9 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
       AppLogger.error('AI', 'Triage submission failed', e);
       setState(() => _isLoading = false);
       if (mounted) {
+        final loc = AppLocalizations.of(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Triage failed: $e'), backgroundColor: AppColors.error),
+          SnackBar(content: Text('${loc.translate('triageFailed')}: $e'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -89,8 +90,9 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('AI Symptom Triage')),
+      appBar: AppBar(title: Text(loc.translate('aiSymptomTriage'))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -109,13 +111,13 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                     ),
                     child: const Icon(LucideIcons.stethoscope, color: Colors.white, size: 24),
                   ),
-                  const SizedBox(width: 14),
-                  const Expanded(
+                  SizedBox(width: 14),
+                  Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('AI-Powered Triage', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
-                        Text('Describe your symptoms for instant risk assessment', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                        Text(loc.translate('aiPoweredTriage'), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                        Text(loc.translate('describeSymptoms'), style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                       ],
                     ),
                   ),
@@ -126,25 +128,25 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
             const SizedBox(height: 24),
 
             // Chief Complaint
-            Text('Chief Complaint *', style: Theme.of(context).textTheme.labelLarge),
+            Text('${loc.translate('chiefComplaint')} *', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 8),
             TextField(
               controller: _chiefComplaintController,
-              decoration: const InputDecoration(
-                hintText: 'e.g., Severe headache, chest pain...',
+              decoration: InputDecoration(
+                hintText: loc.translate('symptomsHint'),
               ),
             ),
 
             const SizedBox(height: 20),
 
             // Symptoms Description
-            Text('Describe Your Symptoms', style: Theme.of(context).textTheme.labelLarge),
+            Text(loc.translate('describeYourSymptoms'), style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 8),
             TextField(
               controller: _symptomsController,
               maxLines: 4,
-              decoration: const InputDecoration(
-                hintText: 'Include duration, severity, triggers, and any other relevant details...',
+              decoration: InputDecoration(
+                hintText: loc.translate('symptomsDetail'),
               ),
             ),
 
@@ -157,14 +159,14 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Severity', style: Theme.of(context).textTheme.labelLarge),
+                      Text(loc.translate('severity'), style: Theme.of(context).textTheme.labelLarge),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        initialValue: _severity,
-                        items: const [
-                          DropdownMenuItem(value: 'mild', child: Text('Mild')),
-                          DropdownMenuItem(value: 'moderate', child: Text('Moderate')),
-                          DropdownMenuItem(value: 'severe', child: Text('Severe')),
+                        value: _severity,
+                        items: [
+                          DropdownMenuItem(value: 'mild', child: Text(loc.translate('mild'))),
+                          DropdownMenuItem(value: 'moderate', child: Text(loc.translate('moderate'))),
+                          DropdownMenuItem(value: 'severe', child: Text(loc.translate('severe'))),
                         ],
                         onChanged: (v) => setState(() => _severity = v ?? 'moderate'),
                       ),
@@ -176,15 +178,15 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Duration', style: Theme.of(context).textTheme.labelLarge),
+                      Text(loc.translate('duration'), style: Theme.of(context).textTheme.labelLarge),
                       const SizedBox(height: 8),
                       DropdownButtonFormField<String>(
-                        initialValue: _duration,
-                        items: const [
-                          DropdownMenuItem(value: 'hours', child: Text('Hours')),
-                          DropdownMenuItem(value: 'days', child: Text('Days')),
-                          DropdownMenuItem(value: 'weeks', child: Text('Weeks')),
-                          DropdownMenuItem(value: 'months', child: Text('Months')),
+                        value: _duration,
+                        items: [
+                          DropdownMenuItem(value: 'hours', child: Text(loc.translate('hours'))),
+                          DropdownMenuItem(value: 'days', child: Text(loc.translate('days'))),
+                          DropdownMenuItem(value: 'weeks', child: Text(loc.translate('weeks'))),
+                          DropdownMenuItem(value: 'months', child: Text(loc.translate('months'))),
                         ],
                         onChanged: (v) => setState(() => _duration = v ?? 'days'),
                       ),
@@ -198,7 +200,7 @@ class _TriageScreenState extends ConsumerState<TriageScreen> {
 
             // Submit button
             AppButton(
-              label: 'Analyze Symptoms',
+              label: loc.translate('analyzeSymptoms'),
               variant: AppButtonVariant.primary,
               isLoading: _isLoading,
               onPressed: _submitTriage,
@@ -226,6 +228,7 @@ class _TriageResult extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     final assessment = result['assessment'] as String? ?? 'No assessment available.';
     final severity = result['severity'] as String? ?? 'moderate';
 
@@ -250,7 +253,7 @@ class _TriageResult extends StatelessWidget {
                     Icon(LucideIcons.stethoscope, size: 14, color: _severityColor(severity)),
                     const SizedBox(width: 6),
                     Text(
-                      'AI TRIAGE ASSESSMENT',
+                      loc.translate('aiTriageAssessment').toUpperCase(),
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: _severityColor(severity)),
                     ),
                   ],
@@ -259,7 +262,7 @@ class _TriageResult extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          const Text('Assessment', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+          Text(loc.translate('assessment'), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
           const SizedBox(height: 6),
           Text(assessment, style: const TextStyle(fontSize: 13, height: 1.5, color: AppColors.textSecondary)),
           const SizedBox(height: 12),
@@ -273,10 +276,10 @@ class _TriageResult extends StatelessWidget {
               children: [
                 Icon(LucideIcons.alertTriangle, size: 14, color: AppColors.warning),
                 const SizedBox(width: 8),
-                const Expanded(
+                Expanded(
                   child: Text(
-                    'AI assessment only. Consult a medical professional for diagnosis.',
-                    style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                    loc.translate('aiAssessmentDisclaimer'),
+                    style: const TextStyle(fontSize: 11, color: AppColors.textSecondary),
                   ),
                 ),
               ],

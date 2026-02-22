@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../shared/widgets/glass_panel.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../providers/dashboard_provider.dart';
@@ -21,6 +22,7 @@ class DashboardHomeScreen extends ConsumerWidget {
     final authState = ref.watch(authProvider);
     final dashState = ref.watch(dashboardProvider);
     final userName = authState.valueOrNull?.name.split(' ').first ?? 'User';
+    final loc = AppLocalizations.of(context);
 
     AppLogger.nav('Dashboard home rendered for $userName');
 
@@ -33,7 +35,7 @@ class DashboardHomeScreen extends ConsumerWidget {
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Good ${_getGreeting()}', style: const TextStyle(fontSize: 13, color: AppColors.textMuted, fontWeight: FontWeight.w400)),
+            Text('${loc.translate('good')} ${_getGreeting(loc)}', style: const TextStyle(fontSize: 13, color: AppColors.textMuted, fontWeight: FontWeight.w400)),
             Text(userName, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           ],
         ),
@@ -65,7 +67,7 @@ class DashboardHomeScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // ── Vitals Cards ──────────────────────────
-                    Text('Your Vitals', style: Theme.of(context).textTheme.headlineMedium),
+                    Text(loc.translate('todaysVitals'), style: Theme.of(context).textTheme.headlineMedium),
                     const SizedBox(height: 12),
                     SizedBox(
                       height: 100,
@@ -83,7 +85,7 @@ class DashboardHomeScreen extends ConsumerWidget {
                     const SizedBox(height: 28),
 
                     // ── Quick Actions ─────────────────────────
-                    Text('Quick Actions', style: Theme.of(context).textTheme.headlineMedium),
+                    Text(loc.translate('quickActions'), style: Theme.of(context).textTheme.headlineMedium),
                     const SizedBox(height: 12),
                     GridView.count(
                       crossAxisCount: 3,
@@ -92,12 +94,12 @@ class DashboardHomeScreen extends ConsumerWidget {
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
                       children: [
-                        _QuickAction(icon: LucideIcons.video, label: 'Video\nConsult', color: const Color(0xFF3B82F6), onTap: () => context.go('/dashboard/consultation')),
-                        _QuickAction(icon: LucideIcons.brain, label: 'AI\nDiagnosis', color: const Color(0xFF8B5CF6), onTap: () => context.go('/dashboard/ai-diagnosis')),
-                        _QuickAction(icon: LucideIcons.fileText, label: 'Health\nRecords', color: const Color(0xFF10B981), onTap: () => context.go('/dashboard/records')),
-                        _QuickAction(icon: LucideIcons.pill, label: 'Pharmacy', color: const Color(0xFFF59E0B), onTap: () => context.go('/dashboard/pharmacy')),
-                        _QuickAction(icon: LucideIcons.mapPin, label: 'Hospital\nMap', color: const Color(0xFFEF4444), onTap: () => context.go('/dashboard/map')),
-                        _QuickAction(icon: LucideIcons.stethoscope, label: 'AI\nTriage', color: const Color(0xFF06B6D4), onTap: () => context.go('/dashboard/triage')),
+                        _QuickAction(icon: LucideIcons.video, label: loc.translate('videoConsult'), color: const Color(0xFF3B82F6), onTap: () => context.go('/dashboard/consultation')),
+                        _QuickAction(icon: LucideIcons.brain, label: loc.translate('aiDiagnosis'), color: const Color(0xFF8B5CF6), onTap: () => context.go('/dashboard/ai-diagnosis')),
+                        _QuickAction(icon: LucideIcons.fileText, label: loc.translate('healthRecords'), color: const Color(0xFF10B981), onTap: () => context.go('/dashboard/records')),
+                        _QuickAction(icon: LucideIcons.pill, label: loc.translate('pharmacy'), color: const Color(0xFFF59E0B), onTap: () => context.go('/dashboard/pharmacy')),
+                        _QuickAction(icon: LucideIcons.mapPin, label: loc.translate('hospitalMap'), color: const Color(0xFFEF4444), onTap: () => context.go('/dashboard/map')),
+                        _QuickAction(icon: LucideIcons.stethoscope, label: loc.translate('aiTriage'), color: const Color(0xFF06B6D4), onTap: () => context.go('/dashboard/triage')),
                       ],
                     ),
 
@@ -107,10 +109,10 @@ class DashboardHomeScreen extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Upcoming Appointments', style: Theme.of(context).textTheme.headlineMedium),
+                        Text(loc.translate('upcomingAppointments'), style: Theme.of(context).textTheme.headlineMedium),
                         TextButton(
                           onPressed: () {},
-                          child: const Text('View All', style: TextStyle(color: AppColors.goldPrimary)),
+                          child: Text(loc.translate('viewAll'), style: const TextStyle(color: AppColors.goldPrimary)),
                         ),
                       ],
                     ),
@@ -124,14 +126,14 @@ class DashboardHomeScreen extends ConsumerWidget {
                               children: [
                                 Icon(LucideIcons.calendar, size: 40, color: AppColors.textMuted),
                                 const SizedBox(height: 12),
-                                const Text(
-                                  'No upcoming appointments',
-                                  style: TextStyle(color: AppColors.textMuted),
+                                Text(
+                                  loc.translate('noAppointments'),
+                                  style: const TextStyle(color: AppColors.textMuted),
                                 ),
                                 const SizedBox(height: 8),
                                 TextButton(
-                                  onPressed: () => context.go('/dashboard/triage'),
-                                  child: const Text('Book a consultation'),
+                                  onPressed: () => context.go('/dashboard/book-appointment'),
+                                  child: Text(loc.translate('bookConsultation')),
                                 ),
                               ],
                             ),
@@ -155,11 +157,11 @@ class DashboardHomeScreen extends ConsumerWidget {
     );
   }
 
-  String _getGreeting() {
+  String _getGreeting(AppLocalizations loc) {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Morning';
-    if (hour < 17) return 'Afternoon';
-    return 'Evening';
+    if (hour < 12) return loc.translate('morning');
+    if (hour < 17) return loc.translate('afternoon');
+    return loc.translate('evening');
   }
 }
 
@@ -177,6 +179,8 @@ class _VitalCard extends StatelessWidget {
       case 'activity': return LucideIcons.activity;
       case 'droplet': return LucideIcons.droplet;
       case 'gauge': return LucideIcons.gauge;
+      case 'moon': return LucideIcons.moon;
+      case 'clock': return LucideIcons.clock;
       default: return LucideIcons.activity;
     }
   }

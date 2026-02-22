@@ -27,8 +27,12 @@ class Appointment {
   factory Appointment.fromJson(Map<String, dynamic> json) {
     return Appointment(
       id: json['_id'] ?? json['id']?.toString() ?? '',
-      doctorName: json['doctorId']?['name'] ?? json['doctorName'] ?? 'Unknown Doctor',
-      patientName: json['patientId']?['name'] ?? json['patientName'] ?? 'Unknown Patient',
+      doctorName: (json['doctorId'] is Map)
+          ? (json['doctorId']['name'] ?? 'Unknown Doctor')
+          : json['doctorName'] ?? 'Unknown Doctor',
+      patientName: (json['patientId'] is Map)
+          ? (json['patientId']['name'] ?? 'Unknown Patient')
+          : json['patientName'] ?? 'Unknown Patient',
       chiefComplaint: json['symptoms'] ?? json['chiefComplaint'] ?? 'General Consultation',
       riskLevel: json['riskLevel'],
       status: json['status'] ?? 'pending',
@@ -110,21 +114,12 @@ class DashboardNotifier extends StateNotifier<DashboardState> {
   }
 
   Future<void> _fetchPatientData() async {
+    // Hardcoded vitals matching web frontend (dashboard/page.tsx)
     List<VitalSign> vitals = [
-      VitalSign(label: 'Heart Rate', value: '--', unit: 'bpm', icon: 'heart'),
-      VitalSign(label: 'Blood Pressure', value: '--/--', unit: 'mmHg', icon: 'activity'),
-      VitalSign(label: 'Weight', value: '--', unit: 'kg', icon: 'gauge'),
+      VitalSign(label: 'Heart Rate', value: '72', unit: 'bpm', icon: 'heart'),
+      VitalSign(label: 'BP', value: '120/80', unit: 'mmHg', icon: 'activity'),
+      VitalSign(label: 'Sleep', value: '7h 30m', unit: '', icon: 'moon'),
     ];
-
-    try {
-      final demoRes = await _apiClient.get(ApiConstants.demographicsEndpoint);
-      if (demoRes.data != null) {
-        final data = demoRes.data['data'] ?? demoRes.data;
-        if (data is Map && data['weight'] != null) {
-          vitals[2] = VitalSign(label: 'Weight', value: data['weight'].toString(), unit: 'kg', icon: 'gauge');
-        }
-      }
-    } catch (_) {}
 
     List<Appointment> appointments = [];
     try {

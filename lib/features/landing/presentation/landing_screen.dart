@@ -58,11 +58,11 @@ class LandingScreen extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     RichText(
-                      text: const TextSpan(
-                        text: 'TeleMed',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
+                      text: TextSpan(
+                        text: loc.translate('telemed'),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: AppColors.textPrimary),
                         children: [
-                          TextSpan(text: 'Care', style: TextStyle(color: AppColors.goldPrimary)),
+                          TextSpan(text: loc.translate('care'), style: const TextStyle(color: AppColors.goldPrimary)),
                         ],
                       ),
                     ),
@@ -119,6 +119,7 @@ class _HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 40, 24, 48),
       child: Column(
@@ -130,8 +131,8 @@ class _HeroSection extends StatelessWidget {
               Container(height: 2, width: 32, color: AppColors.goldPrimary),
               const SizedBox(width: 8),
               Text(
-                'PREMIUM HEALTHCARE REDEFINED',
-                style: TextStyle(
+                loc.translate('premiumHealthcareRedefined'),
+                style: const TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 2,
@@ -147,9 +148,9 @@ class _HeroSection extends StatelessWidget {
           Text.rich(
             TextSpan(
               children: [
-                const TextSpan(text: 'Your Health,\n'),
+                TextSpan(text: '${loc.translate('heroHeading')}\n'),
                 TextSpan(
-                  text: 'elevated to Gold Standard.',
+                  text: loc.translate('heroHeadingHighlight'),
                   style: TextStyle(
                     foreground: Paint()
                       ..shader = AppColors.goldTextGradient.createShader(
@@ -165,8 +166,7 @@ class _HeroSection extends StatelessWidget {
           const SizedBox(height: 20),
 
           Text(
-            'Connect with world-class specialists instantly. '
-            'Experience AI-powered diagnostics and concierge medical care.',
+            loc.translate('heroSubtext'),
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               color: AppColors.textSecondary,
               height: 1.6,
@@ -178,7 +178,7 @@ class _HeroSection extends StatelessWidget {
           Row(
             children: [
               AppButton(
-                label: 'Book Priority Consult',
+                label: loc.translate('bookPriorityConsult'),
                 variant: AppButtonVariant.primary,
                 onPressed: onRegister,
               ),
@@ -216,26 +216,27 @@ class _HeroSection extends StatelessWidget {
 class _ServicesSection extends StatelessWidget {
   const _ServicesSection();
 
-  static final _services = [
-    _ServiceItem(icon: LucideIcons.stethoscope, title: 'General Consultation', desc: 'For the health needs of you and your family', gradient: [const Color(0xFF60A5FA), const Color(0xFF2563EB)]),
-    _ServiceItem(icon: LucideIcons.baby, title: 'Pediatrics', desc: "Expert care for your child's health", gradient: [const Color(0xFFF472B6), const Color(0xFFDB2777)]),
-    _ServiceItem(icon: LucideIcons.brain, title: 'Mental Health', desc: 'Speak with a therapist about your concerns', gradient: [const Color(0xFF2DD4BF), const Color(0xFF0D9488)]),
-    _ServiceItem(icon: LucideIcons.sparkles, title: 'Dermatology', desc: 'Skin & wellness treatments', gradient: [const Color(0xFFFBBF24), const Color(0xFFD97706)]),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final services = [
+      _ServiceItem(icon: LucideIcons.stethoscope, titleKey: 'generalConsultation', descKey: 'generalConsultationDesc', gradient: [const Color(0xFF60A5FA), const Color(0xFF2563EB)]),
+      _ServiceItem(icon: LucideIcons.baby, titleKey: 'pediatrics', descKey: 'pediatricsDesc', gradient: [const Color(0xFFF472B6), const Color(0xFFDB2777)]),
+      _ServiceItem(icon: LucideIcons.brain, titleKey: 'mentalHealth', descKey: 'mentalHealthDesc', gradient: [const Color(0xFF2DD4BF), const Color(0xFF0D9488)]),
+      _ServiceItem(icon: LucideIcons.sparkles, titleKey: 'dermatology', descKey: 'dermatologyDesc', gradient: [const Color(0xFFFBBF24), const Color(0xFFD97706)]),
+    ];
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Our Services', style: Theme.of(context).textTheme.displayMedium),
+          Text(loc.translate('ourServices'), style: Theme.of(context).textTheme.displayMedium),
           const SizedBox(height: 8),
-          Text('Expert care at your fingertips.', style: Theme.of(context).textTheme.bodyMedium),
+          Text(loc.translate('expertCareAtYourFingertips'), style: Theme.of(context).textTheme.bodyMedium),
           const SizedBox(height: 24),
-          ...List.generate(_services.length, (i) {
-            final s = _services[i];
+          ...List.generate(services.length, (i) {
+            final s = services[i];
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: GlassPanel(
@@ -256,9 +257,9 @@ class _ServicesSection extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(s.title, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                          Text(loc.translate(s.titleKey), style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
                           const SizedBox(height: 4),
-                          Text(s.desc, style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+                          Text(loc.translate(s.descKey), style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
                         ],
                       ),
                     ),
@@ -276,10 +277,10 @@ class _ServicesSection extends StatelessWidget {
 
 class _ServiceItem {
   final IconData icon;
-  final String title;
-  final String desc;
+  final String titleKey;
+  final String descKey;
   final List<Color> gradient;
-  const _ServiceItem({required this.icon, required this.title, required this.desc, required this.gradient});
+  const _ServiceItem({required this.icon, required this.titleKey, required this.descKey, required this.gradient});
 }
 
 // ── How It Works Section ───────────────────────────────────────
@@ -287,25 +288,28 @@ class _ServiceItem {
 class _HowItWorksSection extends StatelessWidget {
   const _HowItWorksSection();
 
-  static const _steps = [
-    ('Create Account', 'Sign up and complete your profile in minutes', Icons.person_add_outlined),
-    ('Choose Specialist', 'Browse our network of certified doctors', Icons.medical_services_outlined),
-    ('Book & Consult', 'Schedule and attend virtual consultations', Icons.videocam_outlined),
-    ('Get Treatment', 'Receive prescriptions and follow-up care', Icons.healing_outlined),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final steps = [
+      (loc.translate('createAccount'), loc.translate('createAccountDesc'), Icons.person_add_outlined),
+      (loc.translate('chooseSpecialist'), loc.translate('chooseSpecialistDesc'), Icons.medical_services_outlined),
+      (loc.translate('bookAndConsult'), loc.translate('bookAndConsultDesc'), Icons.videocam_outlined),
+      (loc.translate('getTreatment'), loc.translate('getTreatmentDesc'), Icons.healing_outlined),
+    ];
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       color: Colors.grey.shade50,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('How It Works', style: Theme.of(context).textTheme.displayMedium),
+          Text(loc.translate('howItWorks'), style: Theme.of(context).textTheme.displayMedium),
+          const SizedBox(height: 8),
+          Text(loc.translate('simpleStepsToGetStarted'), style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade600)),
           const SizedBox(height: 24),
-          ...List.generate(_steps.length, (i) {
-            final (title, desc, icon) = _steps[i];
+          ...List.generate(steps.length, (i) {
+            final (title, desc, icon) = steps[i];
             return Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Row(
@@ -350,21 +354,23 @@ class _HowItWorksSection extends StatelessWidget {
 class _StatsSection extends StatelessWidget {
   const _StatsSection();
 
-  static const _stats = [
-    ('50K+', 'Patients'),
-    ('200+', 'Doctors'),
-    ('98%', 'Satisfaction'),
-    ('24/7', 'Availability'),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final stats = [
+      ('1,200+', loc.translate('verifiedDoctors')),
+      ('50,000+', loc.translate('patientsServed')),
+      ('500+', loc.translate('dailyConsultations')),
+      ('98%', loc.translate('satisfactionRate')),
+      ('24/7', loc.translate('availability')),
+    ];
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(_stats.length, (i) {
-          final (value, label) = _stats[i];
+        children: List.generate(stats.length, (i) {
+          final (value, label) = stats[i];
           return Column(
             children: [
               Text(value, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: AppColors.goldDark)),
@@ -383,23 +389,24 @@ class _StatsSection extends StatelessWidget {
 class _TestimonialsSection extends StatelessWidget {
   const _TestimonialsSection();
 
-  static const _testimonials = [
-    ('The AI diagnosis feature is incredible. It gave me accurate insights before my doctor visit.', 'Sarah M.', 'Patient'),
-    ('Managing my clinic\'s queue remotely has been a game changer. The copilot is amazing.', 'Dr. Patel', 'Cardiologist'),
-    ('I love the pharmacy delivery and prescription scanning features!', 'Ravi K.', 'Patient'),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
+    final testimonials = [
+      (loc.translate('testimonial1'), loc.translate('testimonial1Author'), loc.translate('patient')),
+      (loc.translate('testimonial2'), loc.translate('testimonial2Author'), loc.translate('patient')),
+      (loc.translate('testimonial3'), loc.translate('testimonial3Author'), loc.translate('patient')),
+    ];
+    
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
       color: Colors.grey.shade50,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('What Our Users Say', style: Theme.of(context).textTheme.displayMedium),
+          Text(loc.translate('whatPatientsSay'), style: Theme.of(context).textTheme.displayMedium),
           const SizedBox(height: 24),
-          ..._testimonials.asMap().entries.map((entry) {
+          ...testimonials.asMap().entries.map((entry) {
             final i = entry.key;
             final (quote, name, role) = entry.value;
             return Padding(
@@ -449,27 +456,28 @@ class _Footer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(24),
       color: AppColors.textPrimary,
       child: Column(
         children: [
           RichText(
-            text: const TextSpan(
+            text: TextSpan(
               text: 'TeleMed',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
-              children: [TextSpan(text: 'Care', style: TextStyle(color: AppColors.goldPrimary))],
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white),
+              children: [TextSpan(text: loc.translate('appBrandingCare'), style: const TextStyle(color: AppColors.goldPrimary))],
             ),
           ),
           const SizedBox(height: 12),
-          const Text(
-            '© 2025 TeleMedCare. All rights reserved.',
-            style: TextStyle(fontSize: 12, color: Colors.white54),
+          Text(
+            loc.translate('copyrightText'),
+            style: const TextStyle(fontSize: 12, color: Colors.white54),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Premium Healthcare, Accessible Everywhere.',
-            style: TextStyle(fontSize: 11, color: Colors.white38),
+          Text(
+            loc.translate('tagline'),
+            style: const TextStyle(fontSize: 11, color: Colors.white38),
           ),
         ],
       ),

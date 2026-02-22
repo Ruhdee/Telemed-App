@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../core/l10n/app_localizations.dart';
 import '../../../core/constants/api_constants.dart';
 import '../../auth/providers/auth_provider.dart';
 import '../../../shared/widgets/glass_panel.dart';
@@ -58,10 +59,11 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = ref.watch(cartProvider);
+    final loc = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pharmacy Store'),
+        title: Text(loc.translate('pharmacyStore')),
         actions: [
           Stack(
             children: [
@@ -95,9 +97,9 @@ class _PharmacyScreenState extends ConsumerState<PharmacyScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                _TabButton(label: 'Medicines', selected: _selectedTab == 0, onTap: () => setState(() => _selectedTab = 0)),
-                const SizedBox(width: 8),
-                _TabButton(label: 'Orders', selected: _selectedTab == 1, onTap: () => setState(() => _selectedTab = 1)),
+                _TabButton(label: loc.translate('medicines'), selected: _selectedTab == 0, onTap: () => setState(() => _selectedTab = 0)),
+                const SizedBox(width: 12),
+                _TabButton(label: loc.translate('orders'), selected: _selectedTab == 1, onTap: () => setState(() => _selectedTab = 1)),
               ],
             ),
           ),
@@ -155,6 +157,7 @@ class _MedicinesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loc = AppLocalizations.of(context);
     if (isLoading) return const Center(child: CircularProgressIndicator(color: AppColors.goldPrimary));
 
     return ListView.builder(
@@ -162,7 +165,10 @@ class _MedicinesTab extends ConsumerWidget {
       itemCount: medicines.length,
       itemBuilder: (context, index) {
         final med = medicines[index];
-        final price = (med['price'] as num?)?.toDouble() ?? 0.0;
+        final rawPrice = med['price'];
+        final price = rawPrice is num
+            ? rawPrice.toDouble()
+            : double.tryParse(rawPrice?.toString() ?? '') ?? 0.0;
         final stock = med['stock'] ?? 0;
         final isRx = med['requiresPrescription'] == true;
 
@@ -191,7 +197,7 @@ class _MedicinesTab extends ConsumerWidget {
                            margin: const EdgeInsets.only(top: 4, bottom: 4),
                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                            decoration: BoxDecoration(color: AppColors.warning.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(4)),
-                           child: const Text('Rx Required', style: TextStyle(fontSize: 10, color: AppColors.warning, fontWeight: FontWeight.bold)),
+                           child: Text(loc.translate('rxRequired'), style: const TextStyle(fontSize: 10, color: AppColors.warning, fontWeight: FontWeight.bold)),
                          ),
                       const SizedBox(height: 4),
                       Text(med['description'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
@@ -201,12 +207,12 @@ class _MedicinesTab extends ConsumerWidget {
                         children: [
                           Text('\$${price.toStringAsFixed(2)}', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.goldDark)),
                           AppButton(
-                            label: 'Add',
+                            label: loc.translate('add'),
                             icon: const Icon(LucideIcons.plus, size: 16, color: Colors.white),
                             variant: AppButtonVariant.primary,
                             onPressed: stock > 0 ? () {
                               ref.read(cartProvider.notifier).addItem(med);
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to cart'), duration: Duration(seconds: 1)));
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(loc.translate('addedToCart')), duration: const Duration(seconds: 1)));
                             } : null,
                           ),
                         ],
@@ -228,15 +234,16 @@ class _OrdersTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(LucideIcons.package, size: 48, color: AppColors.textMuted),
           const SizedBox(height: 16),
-          const Text('No orders yet', style: TextStyle(fontSize: 16, color: AppColors.textMuted)),
+          Text(loc.translate('noOrdersYet'), style: const TextStyle(fontSize: 16, color: AppColors.textMuted)),
           const SizedBox(height: 8),
-          const Text('Your medication orders will appear here', style: TextStyle(fontSize: 13, color: AppColors.textMuted)),
+          Text(loc.translate('yourMedicationOrders'), style: const TextStyle(fontSize: 13, color: AppColors.textMuted)),
         ],
       ),
     ).animate().fadeIn();
