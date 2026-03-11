@@ -1,6 +1,0 @@
-﻿Analyzing lib...
-
-warning - features\records\presentation\records_screen.dart:6:8 - Unused import: 'package:dio/dio.dart'. Try removing the import directive. - unused_import
-   info - features\ai_diagnosis\presentation\ai_diagnosis_detail_screen.dart:243:15 - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
-
-2 issues found.

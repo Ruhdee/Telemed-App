@@ -1,5 +1,0 @@
-Analyzing lib...
-
-warning - core\router\app_router.dart:1:8 - Unused import: 'package:flutter/material.dart'. Try removing the import directive. - unused_import
-
-1 issue found.
