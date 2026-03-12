@@ -1,16 +1,65 @@
 # telemed_app
 
-A new Flutter project.
+Telemed — a Flutter telemedicine app (audio/video consults) with localization.
 
-## Getting Started
+## Overview
 
-This project is a starting point for a Flutter application.
+This repository contains the Telemed mobile application built with Flutter.
+It includes Android and iOS projects, localization assets, and core app code under `lib/`.
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Audio & video consult support
+- Localization (English, Hindi, Marathi)
+- Secure storage and native integrations
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Quick Start
+
+Prerequisites:
+
+- Install Flutter SDK: https://docs.flutter.dev/get-started/install
+- Android SDK (for Android builds) / Xcode (for iOS builds)
+
+Setup:
+
+```bash
+git clone <repo>
+cd telemed_app
+flutter pub get
+```
+
+Run on Android:
+
+```bash
+flutter run -d android
+```
+
+Build APK:
+
+```bash
+flutter build apk --release
+```
+
+Run tests:
+
+```bash
+flutter test
+```
+
+## Localization
+
+Localization files live in `assets/l10n/` (e.g. `en.json`, `hi.json`, `mr.json`). The app uses these for runtime translations.
+
+## Project layout
+
+- `lib/main.dart`: app entrypoint
+- `lib/core/`, `lib/features/`, `lib/shared/`: core app modules
+- `android/`, `ios/`: platform projects
+
+## Contributing
+
+Open an issue or submit a PR. For quick changes, run `flutter analyze` and `flutter test` before submitting.
+
+## License
+
+See repository license (if any) or contact the maintainers.
